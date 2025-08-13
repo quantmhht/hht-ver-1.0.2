@@ -8,7 +8,7 @@ export const API = {
     FEEDBACK: "/feedback_api",
     FEEDBACK_TYPES: "/feedback_types_api",
     INFORMATION_GUIDE: "/information_guide_api",
-    UPLOAD_IMAGE: "/upload_image_api",
+    UPLOAD_IMAGE: import.meta.env.VITE_UPLOAD_URL as string,
     CREATE_SCHEDULE: "/create_schedule_api",
     GET_SCHEDULE: "/get_schedule_api",
 };

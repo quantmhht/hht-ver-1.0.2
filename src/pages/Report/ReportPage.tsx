@@ -8,6 +8,8 @@ import { AdminReportView } from "./components/AdminReportView";
 import { LeaderReportView } from "./components/LeaderReportView";
 import styled from "styled-components";
 import tw from "twin.macro";
+import { useNavigate } from "react-router-dom";
+
 
 const NoAccessContainer = styled(Box)`
   ${tw`p-6 text-center bg-white mx-4 mt-4 rounded-lg`}
@@ -34,6 +36,7 @@ const NotificationBadge = styled.div`
 `;
 
 const ReportPage: React.FC = () => {
+  const navigate = useNavigate();
   const { user, organization } = useStore((state) => ({
     user: state.user,
     organization: state.organization,
@@ -60,10 +63,19 @@ const ReportPage: React.FC = () => {
         assignedTo: userRole === "leader" ? zaloId : undefined,
       };
       getReports(params);
-      getReportStats( userRole === "leader" ? zaloId : undefined);
+      getReportStats({ tdpId: userRole === "leader" ? zaloId : undefined });
     }
   }, [ zaloId, userRole]);
-
+    // Chờ cho đến khi thông tin user được tải đầy đủ từ store
+  if (!user) {
+    return (
+      <PageLayout title="Báo cáo TDP">
+        <Box flex justifyContent="center" alignItems="center" className="h-screen">
+          <Text>Đang kiểm tra quyền truy cập...</Text>
+        </Box>
+      </PageLayout>
+    );
+  }
   // Kiểm tra quyền truy cập
   if (!canAccessReports(zaloId)) {
     return (
@@ -172,7 +184,7 @@ const ReportPage: React.FC = () => {
           <ActionButton 
             variant="secondary" 
             className="relative"
-            onClick={() => {/* Navigate to create report */}}
+            onClick={() => navigate("/report/create")} 
           >
             <Box className="flex flex-col items-center">
               <Icon icon="zi-plus" className="mb-1" />
@@ -182,7 +194,7 @@ const ReportPage: React.FC = () => {
           
           <ActionButton 
             variant="secondary"
-            onClick={() => {/* Navigate to statistics */}}
+            onClick={() => navigate("/report/stats")} 
           >
             <Box className="flex flex-col items-center">
               <Icon icon="zi-poll" className="mb-1" />
@@ -206,7 +218,7 @@ const ReportPage: React.FC = () => {
           
           <ActionButton 
             variant="secondary"
-            onClick={() => {/* Navigate to TDP management */}}
+            onClick={() => navigate("/report/manage-tdp")}
           >
             <Box className="flex flex-col items-center">
               <Icon icon="zi-group" className="mb-1" />

@@ -12,4 +12,3 @@ export * from "./notifications/ErrorNotification";
 export * from "./date-picker";
 export * from "./image-upload";
 export * from "./news";
-export * from "../contexts/AuthContext";

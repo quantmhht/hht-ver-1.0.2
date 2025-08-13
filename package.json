@@ -37,13 +37,15 @@
         }
     },
     "dependencies": {
+        "@types/cors": "^2.8.19",
         "@types/react": "^18.0.28",
         "@types/react-datepicker": "^4.11.2",
         "@types/react-dom": "^18.0.11",
-        "@types/react-router-dom": "^5.3.3",
         "@types/styled-components": "^5.1.26",
         "@xuannghia/html2canvas": "^1.4.1",
+        "busboy": "^1.6.0",
         "clsx": "^1.2.1",
+        "cors": "^2.8.5",
         "date-fns": "^2.30.0",
         "firebase": "^12.0.0",
         "lodash.debounce": "^4.0.8",
@@ -66,7 +68,6 @@
     },
     "devDependencies": {
         "@types/node": "^18.14.6",
-        "@types/react-toastify": "^4.0.2",
         "@typescript-eslint/eslint-plugin": "^5.61.0",
         "@vitejs/plugin-react": "^4.7.0",
         "autoprefixer": "^10.4.13",

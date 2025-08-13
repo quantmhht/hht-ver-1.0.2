@@ -68,7 +68,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             const images = await pickImages({
                 maxItemSize,
                 maxSelectItem: maxSelect ? maxSelect - imageUrls.length : 1,
-                serverUploadUrl: BASE_URL + API.UPLOAD_IMAGE,
             });
             setImageUrls([...imageUrls, ...images]);
         } catch (err) {

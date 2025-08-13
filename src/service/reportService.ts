@@ -12,7 +12,7 @@ import {
   orderBy,
   limit,
   Timestamp,
-  arrayUnion
+  arrayUnion,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import {
@@ -27,6 +27,7 @@ import {
   SubmitReportData, // <-- Import thêm
   ReportHistoryItem // <-- Import thêm
 } from "../types/report";
+import { News } from "@dts";
 
 // ===== REPORT CRUD =====
 
@@ -387,6 +388,49 @@ export const submitReport = async (
     return true;
   } catch (error) {
     console.error("Error submitting report:", error);
+    return false;
+  }
+
+};
+export interface NewsData {
+  title: string;
+  thumbnail: string;
+  content: string;
+  images: string[];
+}
+
+export const addNews = async (data: NewsData): Promise<string | null> => {
+  try {
+    const newsCollection = collection(db, "news");
+    const docRef = await addDoc(newsCollection, {
+      ...data,
+      createdAt: Timestamp.now(), // Thêm thời gian tạo
+    });
+    return docRef.id; // Trả về ID của document vừa tạo
+  } catch (error) {
+    console.error("Error adding news:", error);
+    return null;
+  }
+};
+
+export const updateNews = async (id: string, data: Partial<NewsData>): Promise<boolean> => {
+  try {
+    const newsDoc = doc(db, "news", id);
+    await updateDoc(newsDoc, data);
+    return true;
+  } catch (error) {
+    console.error("Error updating news:", error);
+    return false;
+  }
+};
+
+export const deleteNews = async (id: string): Promise<boolean> => {
+  try {
+    const newsDoc = doc(db, "news", id);
+    await deleteDoc(newsDoc);
+    return true;
+  } catch (error) {
+    console.error("Error deleting news:", error);
     return false;
   }
 };

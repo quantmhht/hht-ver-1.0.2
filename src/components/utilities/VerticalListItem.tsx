@@ -1,13 +1,14 @@
 import React, { FunctionComponent } from "react";
 import styled from "styled-components";
 import tw from "twin.macro";
-import { List } from "zmp-ui";
+import { List, Button, Icon, Text, Box } from "zmp-ui";
 
 import { ImageIcon } from "@components/icons";
 import { Utinity } from "@dts";
 import WithItemClick from "./WithItemClick";
 
 export interface ItemProps extends Utinity {
+    name?: string;
     handleClickUtinity?: ({
         inDevelopment,
         path,
@@ -22,7 +23,7 @@ export interface ItemProps extends Utinity {
 }
 
 const StyledListItem = styled(List.Item)`
-    ${tw`px-0 py-2`}
+    ${tw`px-0 py-3`}
     .zaui-list-item-content {
         display: flex;
         align-items: center;
@@ -33,21 +34,33 @@ const StyledListItem = styled(List.Item)`
 `;
 
 const UtinityItem: FunctionComponent<ItemProps> = props => {
-    const { iconSrc, label, handleClickUtinity } = props;
+    const { iconSrc, label, name, handleClickUtinity } = props;
 
-    const handleClick = (
-        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    ) => {
-        event.preventDefault();
+    const handleCallClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.stopPropagation(); 
         handleClickUtinity?.(props);
     };
 
     return (
-        <StyledListItem
-            onClick={handleClick}
-            prefix={<ImageIcon src={iconSrc} />}
-            title={label}
-        />
+        <StyledListItem prefix={<ImageIcon src={iconSrc} />}>
+            {/* Bọc tất cả nội dung trong một Box */}
+            <Box flex flexDirection="column" className="w-full">
+                {/* Dòng 1: Chức danh */}
+                <Text.Title size="small" className="font-semibold">{label}</Text.Title>
+                
+                {/* Dòng 2: Tên và nút Gọi */}
+                <Box flex justifyContent="space-between" alignItems="center" className="mt-1">
+                    <Text size="small" className="text-gray-500">{name}</Text>
+                    <Button 
+                        size="small" 
+                        icon={<Icon icon="zi-call-solid" />}
+                        onClick={handleCallClick}
+                    >
+                        Gọi
+                    </Button>
+                </Box>
+            </Box>
+        </StyledListItem>
     );
 };
 

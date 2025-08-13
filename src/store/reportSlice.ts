@@ -1,4 +1,6 @@
 // src/store/reportSlice.ts
+import { State } from "./index"; // Thêm dòng này vào đầu file
+
 import { StateCreator } from "zustand";
 import {
   Report,
@@ -41,7 +43,6 @@ export interface ReportSlice {
   reportDetail: Report | null;
   loadingReportDetail: boolean;
   updatingReport: boolean;
-  user: User | null;
   // Actions
   getReports: (params: GetReportsParams) => Promise<void>;
   createReport: (params: CreateReportParams) => Promise<boolean>;
@@ -65,7 +66,7 @@ export interface ReportSlice {
 }
 
 
-export const createReportSlice: StateCreator<ReportSlice> = (set, get) => ({
+export const createReportSlice: StateCreator<State, [], [], ReportSlice> = (set, get) => ({
   // Initial state
   reports: [],
   loadingReports: false,
@@ -76,8 +77,6 @@ export const createReportSlice: StateCreator<ReportSlice> = (set, get) => ({
   tdpList: [],
   loadingTDP: false,
   selectedReport: null,
-  user: { id: 'admin_id_001', name: 'Admin' }, // <-- Dữ liệu user giả lập
-
   reportDetail: null,
   loadingReportDetail: false,
   updatingReport: false,

@@ -134,20 +134,21 @@ export type Utinity = {
     label: string;
     icon?: React.FC<any>;
     iconSrc?: any;
+    name?: string;
     path?: string;
     link?: string;
     inDevelopment?: boolean;
     phoneNumber?: string;
 };
 export interface News {
-      id: number;
+      id: string;
       title: string;
       thumbnail: string;
       content: string;
       images: string[];
     };
 export interface News {
-      id: number;
+      id: string;
       title: string;
       thumbnail: string;
       content: string;

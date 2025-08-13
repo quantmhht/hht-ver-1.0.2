@@ -130,26 +130,41 @@ const ErrorNotification = () => {
 };
 
 const MyApp = () => {
-    const token = useStore(state => state.token);
-    const [, getOrganization] = useStore(state => [
-        state.organization,
-        state.getOrganization,
-    ]);
+    const { token, getAccessToken, organization, getOrganization, user } = useStore(state => ({
+        token: state.token,
+        getAccessToken: state.getAccessToken,
+        organization: state.organization,
+        getOrganization: state.getOrganization,
+        user: state.user,
+    }));
 
-    const getOrg = async () => {
-        try {
-            await getOrganization({ miniAppId: MINI_APP_ID });
-        } catch (err) {
-            console.log(err);
-        }
-    };
+    // Thêm state để theo dõi quá trình tải dữ liệu ban đầu
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (token) {
-            getOrg();
-        }
-    }, [token]);
+        const initializeApp = async () => {
+            try {
+                // Nếu chưa có token, lấy token trước
+                if (!token) {
+                    await getAccessToken();
+                }
+                // Sau khi có token, lấy thông tin organization
+                await getOrganization({ miniAppId: MINI_APP_ID });
+            } catch (error) {
+                console.error("Initialization error:", error);
+            } finally {
+                // Dù thành công hay thất bại, kết thúc quá trình tải
+                setLoading(false);
+            }
+        };
 
+        initializeApp();
+    }, []); // Chỉ chạy một lần khi ứng dụng khởi động
+
+    // Hiển thị màn hình chờ nếu chưa tải xong
+
+
+    // Khi đã tải xong, hiển thị nội dung chính
     return (
         <>
             <ErrorNotification />

@@ -7,7 +7,7 @@
         key: "feedback",
         label: "Phản ánh hiện trường",
         icon: Icon.PenIcon,
-        path: "/create-feedback",
+        path: "/feedbacks",
       },
       {
         key: "public-service",
@@ -30,29 +30,57 @@
     ];
 
     export const CONTACTS: Array<Utinity> = [
-      {
-        key: "bi-thu",
-        label: "Bí thư Đảng ủy phường",
-        iconSrc: PhoneIcon,
-        phoneNumber: "0123456789", // Thay số thật
-      },
-      {
-        key: "chu-tich",
-        label: "Chủ tịch UBND phường",
-        iconSrc: PhoneIcon,
-        phoneNumber: "0123456788", // Thay số thật
-      },
-      {
-        key: "truong-ca",
-        label: "Trưởng Công an Phường",
-        iconSrc: PhoneIcon,
-        phoneNumber: "0123456787", // Thay số thật
-      },
-      {
-        key: "truong-ban-chqs",
-        label: "Trưởng ban CHQS phường",
-        iconSrc: PhoneIcon,
-        phoneNumber: "0123456786", // Thay số thật
-      },
-    ];
-    
+  {
+    key: "bi-thu",
+    label: "Bí thư Đảng ủy phường",
+    name: "Đậu Tùng Lâm", 
+    iconSrc: PhoneIcon,
+    phoneNumber: "0917726888", 
+  },
+  {
+    key: "chu-tich",
+    label: "Chủ tịch UBND phường",
+    name: "Tô Thái Hòa", 
+    iconSrc: PhoneIcon,
+    phoneNumber: "0912234666", 
+  },
+  {
+    key: "p-chu-tich-1",
+    label: "Phó Chủ tịch UBND phường",
+    name: "Nguyễn Nhật Linh", 
+    iconSrc: PhoneIcon,
+    phoneNumber: "0916266568", 
+  },
+    {
+    key: "p-chu-tich-2",
+    label: "Phó Chủ tịch UBND phường",
+    name: "Lê Thị Thanh Vân", 
+    iconSrc: PhoneIcon,
+    phoneNumber: "0915443998", 
+  },
+  {
+    key: "truong-ban-chqs",
+    label: "Chỉ huy trưởng Quân sự phường",
+    name: "Trương Quang Tuân", 
+    iconSrc: PhoneIcon,
+    phoneNumber: "0989803123", 
+  },
+  {
+    key: "truong-ca",
+    label: "Trưởng Công an phường",
+    name: "Diệp Xuân Nam",
+    iconSrc: PhoneIcon,
+    phoneNumber: "0989893623", 
+  },
+];
+    // Thêm đoạn mã này vào cuối file src/constants/utinities.ts
+
+export const TDP_LIST = [
+  "TDP văn minh",
+  "TDP tiến bộ",
+  "TDP bắc thượng",
+  "TDP kỳ phong",
+  "TDP kỷ các",
+  "TDP đông tân",
+  // Thêm các TDP khác vào đây
+];

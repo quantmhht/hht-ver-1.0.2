@@ -204,11 +204,11 @@ useEffect(() => {
 
           <FormGroup>
             <Label>Mô tả *</Label>
-            <textarea
+            <Input.TextArea
               placeholder="Mô tả chi tiết về báo cáo..."
               value={form.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
-              rows={4}
+              rows={7}
               className="w-full p-2 border rounded"
             />
           </FormGroup>
@@ -230,7 +230,7 @@ useEffect(() => {
 
           <FormGroup>
             <Label>Yêu cầu đặc biệt</Label>
-            <textarea
+            <Input.TextArea
               placeholder="Các yêu cầu đặc biệt, định dạng báo cáo..."
               value={form.requirements}
               onChange={(e) => handleInputChange("requirements", e.target.value)}

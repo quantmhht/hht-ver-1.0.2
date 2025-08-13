@@ -53,13 +53,19 @@ const Label = styled(Text)`
 `;
 
 const UtinityItem: FunctionComponent<UtinityItemProps> = props => {
-    const { icon: Icon, label, handleClickUtinity } = props;
+    const { icon: Icon, label, handleClickUtinity, onClick  } = props;
 
     const handleClick = (
         event: React.MouseEvent<HTMLDivElement, MouseEvent>,
     ) => {
         event.preventDefault();
-        handleClickUtinity?.(props);
+        if (onClick) {
+            onClick();
+        } else {
+        // Nếu không có onClick, dùng logic mặc định
+            handleClickUtinity?.(props);
+        }
+        // --- KẾT THÚC SỬA ĐỔI ---
     };
 
     return (

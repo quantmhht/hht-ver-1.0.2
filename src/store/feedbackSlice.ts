@@ -9,6 +9,7 @@ import {
     CreateFeedbackParams,
     GetFeedbacksParams,
     GetFeedbackTypeParams,
+    updateFeedback 
 } from "@service/services";
 import { StateCreator } from "zustand";
 
@@ -19,9 +20,10 @@ export interface CreateFeedbackFormParams {
     fullName: string;
     address: string;
     phoneNumber: string;
-    nationalId: string;
     feedBackTypeId: number; // ID số
     imageUrls: string[];
+    location?: {latitude: string, longitude: string} | null; // <-- Thêm dòng này
+
 }
 
 export interface FeedbackSlice {
@@ -38,6 +40,8 @@ export interface FeedbackSlice {
     getFeedbacks: (params: GetFeedbacksParams) => Promise<void>;
     getFeedbackTypes: (params: GetFeedbackTypeParams) => Promise<void>;
     getFeedback: (params: { id: string }) => Promise<void>;
+    replyToFeedback: (id: string, response: string) => Promise<boolean>; // <-- Thêm dòng này
+
 }
 
 const feedbackSlice: StateCreator<FeedbackSlice> = (set, get) => ({
@@ -62,12 +66,13 @@ const feedbackSlice: StateCreator<FeedbackSlice> = (set, get) => ({
                 fullName: feedback.fullName,
                 address: feedback.address,
                 phoneNumber: feedback.phoneNumber,
-                nationalId: feedback.nationalId,
                 type: getFeedbackTypeName(feedback.feedBackTypeId), // Chuyển ID thành tên
                 imageUrls: feedback.imageUrls,
                 response: "",
                 creationTime: new Date(),
                 responseTime: null,
+                location: feedback.location, // <-- Thêm dòng này
+
             };
 
             const rs = await createFeedback(feedbackData);
@@ -156,6 +161,22 @@ const feedbackSlice: StateCreator<FeedbackSlice> = (set, get) => ({
             set(state => ({ ...state, feedbackDetail: feedback }));
         } catch (err) {
             console.error("Error getting feedback detail:", err);
+        }
+    },
+     replyToFeedback: async (id: string, response: string) => {
+        try {
+            set({ creatingFeedback: true }); // Tái sử dụng state loading
+            const success = await updateFeedback(id, { response });
+            if (success) {
+                // Tải lại chi tiết phản ánh để cập nhật giao diện
+                await get().getFeedback({ id });
+            }
+            return success;
+        } catch (error) {
+            console.error("Error replying to feedback:", error);
+            return false;
+        } finally {
+            set({ creatingFeedback: false });
         }
     },
 });

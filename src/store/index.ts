@@ -10,7 +10,7 @@ import { createNewsSlice, NewsSlice } from "./newsSlice";
 import { createReportSlice, ReportSlice } from "./reportSlice"; // ← Thêm ReportSlice
 
 
-type State = AppSlice &
+export type State = AppSlice &
     AuthSlice &
     FeedbackSlice &
     OrganizationSlice &
@@ -25,6 +25,5 @@ export const useStore = create<State>()(
         ...createOrganizationSlide(...a),
         ...createNewsSlice(...a), 
         ...createReportSlice(...a), // ← Thêm ReportSlice vào store
-
     })),
 );

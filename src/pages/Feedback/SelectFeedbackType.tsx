@@ -17,18 +17,29 @@
     export interface SelectFeedbackTypeProps extends Omit<CheckboxGroupProps, "onChange" | "value"> {
       onChange?: (id: string) => void;
       value?: CheckboxValueType;
+      readOnly?: boolean; // <-- Thêm dòng này
+
     }
 
     const feedbackTypes = [
-      { id: 1, title: "Tin báo về ANTT" },
-      { id: 2, title: "Tin báo về văn hóa xã hội" },
-      { id: 3, title: "Tin báo về địa chính, xây dựng, kinh doanh, đô thị" },
-      { id: 4, title: "Tin báo khác" },
+      { id: 1, title: "An ninh trật tự đô thị" },
+      { id: 2, title: "An toàn giao thông" },
+      { id: 3, title: "Hạ tầng đô thị, đất đai, xây dựng" },
+      { id: 4, title: "Ô nhiễm môi trường" },
+      { id: 5, title: "An toàn thực phẩm" },
+      { id: 6, title: "Y tế, sức khỏe" },
+      { id: 7, title: "Công vụ, công chức, hành chính" },
+      { id: 8, title: "Vướng mắc doanh nghiệp" },
+      { id: 9, title: "Hàng hóa, tiêu dùng, dịch vụ" },
+      { id: 10, title: "Phản hồi thông tin báo chí" },
+      { id: 11, title: "Trẻ em, giáo dục" },
+      { id: 12, title: "Các vấn đề khác" },
     ];
 
     const SelectFeedbackType: React.FC<SelectFeedbackTypeProps> = ({
       onChange,
       value,
+      readOnly,
     }) => {
       const onChangeType = (e: React.ChangeEvent<HTMLInputElement>) => {
         onChange?.(e.target.value);
