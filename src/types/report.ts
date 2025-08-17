@@ -1,68 +1,65 @@
-// src/types/report.ts
+// KHAI BÁO VÀ EXPORT 2 KIỂU DỮ LIỆU BỊ THIẾU
+export type ReportStatus = 'pending' | 'in_progress' | 'submitted' | 'approved' | 'rejected' | 'overdue';
+export type ReportPriority = 'low' | 'medium' | 'high';
+
+export enum QuestionType {
+  SHORT_ANSWER = 'short_answer',
+  SINGLE_CHOICE = 'single_choice',
+  MULTIPLE_CHOICE = 'multiple_choice',
+}
+
+export interface QuestionOption {
+  id: string;
+  value: string;
+}
+
+export interface Question {
+  id: string;
+  text: string;
+  type: QuestionType;
+  isRequired: boolean;
+  options?: QuestionOption[];
+}
+
+export interface Answer {
+  questionId: string;
+  value: string | string[]; 
+}
+
+export interface ReportHistory {
+  action: 'created' | 'submitted' | 'approved' | 'rejected' | 'in_progress';
+  actor: {
+    zaloId: string;
+    name: string;
+  };
+  timestamp: number;
+  notes?: string;
+}
+
 export interface Report {
   id: string;
   title: string;
-  description: string;
-  assignedTo: string; 
-  assignedToName?: string;
-  assignedBy: string; 
-  assignedByName?: string;
-  dueDate: Date;
-  createdAt: Date;
-  updatedAt?: Date;
-  submittedAt?: Date;
-  completedAt?: Date;
+  questions: Question[];
+  
+  assignedTo: {
+    tdpId: string;
+    zaloId: string;
+    tdpName: string;
+  };
+  assignedBy: {
+    zaloId: string;
+    name: string;
+  };
+  // SỬ DỤNG 2 KIỂU DỮ LIỆU MỚI
   status: ReportStatus;
   priority: ReportPriority;
-  category: string;
-  requirements?: string;
-  tdpName: string;
-  feedback?: string;
-  submittedContent?: string;
-  submittedImages?: string[];
-  history?: ReportHistoryItem[];
-}
 
-
-export interface ReportHistoryItem {
-  timestamp: Date;
-  action: string; // Ví dụ: "Đã duyệt", "Từ chối", "Nộp lại"
-  note?: string;   // Ghi chú hoặc lý do
-  by: string;       // Tên người thực hiện hành động
-}
-
-export type ReportStatus = 
-  | "pending"     // Chưa làm
-  | "in_progress" // Đang làm
-  | "submitted"   // Đã nộp, chờ duyệt
-  | "approved"    // Đã được duyệt
-  | "rejected"    // Bị từ chối
-  | "overdue";    // Quá hạn
-
-export type ReportPriority = "low" | "medium" | "high" | "urgent";
-
-export interface ReportTemplate {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  fields: ReportField[];
-  isActive: boolean;
-  createdBy: string;
-  createdAt: Date;
-}
-
-export interface ReportField {
-  id: string;
-  label: string;
-  type: "text" | "textarea" | "number" | "date" | "file";
-  required: boolean;
-  placeholder?: string;
-  validation?: {
-    min?: number;
-    max?: number;
-    pattern?: string;
-  };
+  dueDate: number;
+  
+  submittedAnswers?: Answer[];
+  submittedAt?: number;
+  
+  history: ReportHistory[];
 }
 
 export interface TDPInfo {
@@ -72,78 +69,9 @@ export interface TDPInfo {
   leaderName: string;
   leaderPhone: string;
   address: string;
-  description?: string; // Thêm vì component có dùng
-  householdCount: number; // Số hộ dân
-  populationCount: number; // Số dân
+  description?: string;
+  householdCount: number;
+  populationCount: number;
   active: boolean;
   createdAt?: Date;
-}
-
-export interface ReportStats {
-  totalReports: number;
-  completedReports: number;
-  pendingReports: number;
-  overdueReports: number;
-  completionRate: number;
-  averageCompletionTime: number; // Thời gian hoàn thành trung bình (ngày)
-  monthlyStats: MonthlyReportStats[];
-}
-
-export interface MonthlyReportStats {
-  month: string; // "2024-01"
-  totalReports: number;
-  completedReports: number;
-  completionRate: number;
-  averageCompletionTime: number;
-}
-
-// Params cho API calls
-export interface GetReportsParams {
-  assignedTo?: string; // Lọc theo tổ trưởng
-  status?: ReportStatus[];
-  category?: string;
-  dateFrom?: Date;
-  dateTo?: Date;
-  page?: number;
-  limit?: number;
-}
-
-export interface CreateReportParams {
-  title: string;
-  description: string;
-  assignedTo: string;
-  dueDate: Date;
-  priority: ReportPriority;
-  category: string;
-  tdpName: string;
-}
-
-export interface UpdateReportParams {
-  id: string;
-  title?: string;
-  description?: string;
-  assignedTo?: string;
-  dueDate?: Date;
-  priority?: ReportPriority;
-  category?: string;
-  tdpName?: string;
-  status?: ReportStatus;
-}
-
-export interface FilterOptions {
-  year: number;
-  month: number | null;
-  quarter: number | null;
-  tdpId: string | null;
-}
-
-export interface SubmitReportData {
-  content: string;
-  images: string[];
-  submittedAt: Date;
-}
-
-export interface User {
-  id: string;
-  name: string;
 }

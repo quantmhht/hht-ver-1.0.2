@@ -1,335 +1,184 @@
-// src/pages/Report/CreateReportPage.tsx
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useStore } from "@store";
-import { 
-  Box, 
-  Text, 
-  Button, 
-  Input, 
-  Select, 
-  DatePicker,
-  Icon 
-} from "zmp-ui";
-import { toast } from "react-toastify";
-import PageLayout from "@components/layout/PageLayout";
-import styled from "styled-components";
-import tw from "twin.macro";
+import React, { useEffect, useState } from 'react';
+import {
+  Input, Select, Button, Box, useSnackbar,
+  DatePicker, Checkbox, Text, Icon,
+} from 'zmp-ui';
+import { useNavigate } from 'react-router-dom';
+import { useStore } from '../../store';
+import { Question, QuestionType, TDPInfo } from '../../types/report';
+import QuestionEditor from './components/QuestionEditor';
+import { getUserRole } from '../../utils/auth';
+import PageLayout from "@components/layout/PageLayout"; // ✅ Dùng layout chung
 
-const Container = styled.div`
-  ${tw`p-4 space-y-4`}
-`;
-
-const FormGroup = styled.div`
-  ${tw`space-y-2`}
-`;
-
-const Label = styled.label`
-  ${tw`block text-sm font-medium text-gray-700`}
-`;
-
-const Card = styled.div`
-  ${tw`bg-white rounded-lg p-4 shadow-sm border`}
-`;
-
-const TDPList = styled.div`
-  ${tw`space-y-2 max-h-48 overflow-y-auto`}
-`;
-
-const TDPItem = styled.div<{ selected: boolean }>`
-  ${tw`p-3 border rounded-lg cursor-pointer transition-colors`}
-  ${({ selected }) => selected ? tw`border-blue-500 bg-blue-50` : tw`border-gray-200 hover:border-gray-300`}
-`;
-
-const ButtonGroup = styled.div`
-  ${tw`flex gap-3 pt-4`}
-`;
-
-interface CreateReportForm {
-  title: string;
-  description: string;
-  dueDate: Date;
-  priority: "low" | "medium" | "high";
-  assignedTo: string[];
-  category: string;
-  requirements: string;
-}
-
-const CreateReportPage: React.FC = () => {
+const CreateReportPage = () => {
   const navigate = useNavigate();
+  const { openSnackbar } = useSnackbar();
   
-  const { user, tdpList, loadingTDP, getTDPList, createReport } = useStore((state) => ({
-    user: state.user,
-    tdpList: state.tdpList,
-    loadingTDP: state.loadingTDP,
-    getTDPList: state.getTDPList,
-    createReport: state.createReport,
+  const { user, tdpList, fetchTDPList, createReport, loading } = useStore(
+    (state) => ({
+      user: state.user,
+      tdpList: state.tdpList,
+      fetchTDPList: state.fetchTDPList,
+      createReport: state.createReport,
+      loading: state.loading,
+    })
+  );
+
+  const userRole = getUserRole(user?.idByOA);
+  const canCreate = userRole === 'admin' || userRole === 'mod';
+
+  useEffect(() => {
+    if (user && canCreate) {
+      fetchTDPList();
+    }
+  }, [user, canCreate]);
+
+  const [title, setTitle] = useState('');
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
+  const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
+  const [selectedTDPs, setSelectedTDPs] = useState<string[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
+
+  const handleAddQuestion = () => {
+    const newQuestion: Question = {
+      id: Date.now().toString(),
+      text: '',
+      type: QuestionType.SHORT_ANSWER,
+      isRequired: false,
+      options: [],
+    };
+    setQuestions([...questions, newQuestion]);
+  };
+
+  const handleQuestionChange = (updatedQuestion: Question) => {
+    setQuestions(
+      questions.map((q) => (q.id === updatedQuestion.id ? updatedQuestion : q))
+    );
+  };
+
+  const handleRemoveQuestion = (questionId: string) => {
+    setQuestions(questions.filter((q) => q.id !== questionId));
+  };
   
-  }));
-
-  const [form, setForm] = useState<CreateReportForm>({
-    title: "",
-    description: "",
-    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Default 7 days from now
-    priority: "medium",
-    assignedTo: [],
-    category: "",
-    requirements: "",
-  });
-  const [selectAll, setSelectAll] = useState(false);
-
-useEffect(() => {
-  getTDPList();
-}, []);
-
-  const handleInputChange = (field: keyof CreateReportForm, value: any) => {
-    setForm(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleTDPSelection = (tdpId: string) => {
-    setForm(prev => ({
-      ...prev,
-      assignedTo: prev.assignedTo.includes(tdpId)
-        ? prev.assignedTo.filter(id => id !== tdpId)
-        : [...prev.assignedTo, tdpId]
-    }));
-  };
-
-  const handleSelectAll = () => {
-    if (selectAll) {
-      setForm(prev => ({ ...prev, assignedTo: [] }));
-    } else {
-      setForm(prev => ({ 
-        ...prev, 
-        assignedTo: tdpList.map(tdp => tdp.leaderZaloId) 
-      }));
-    }
-    setSelectAll(!selectAll);
-  };
-
-  const validateForm = (): boolean => {
-    if (!form.title.trim()) {
-      toast.error("Vui lòng nhập tiêu đề báo cáo");
-      return false;
-    }
-    if (!form.description.trim()) {
-      toast.error("Vui lòng nhập mô tả báo cáo");
-      return false;
-    }
-    if (form.assignedTo.length === 0) {
-      toast.error("Vui lòng chọn ít nhất một TDP");
-      return false;
-    }
-    if (form.dueDate < new Date()) {
-      toast.error("Hạn báo cáo phải sau ngày hiện tại");
-      return false;
-    }
-    return true;
+  const handleTDPSelectionChange = (tdpId: string) => {
+    setSelectedTDPs((prev) =>
+      prev.includes(tdpId)
+        ? prev.filter((id) => id !== tdpId)
+        : [...prev, tdpId]
+    );
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;}
+    if (!title.trim() || !dueDate || selectedTDPs.length === 0 || questions.length === 0) {
+      openSnackbar({ text: 'Vui lòng điền đầy đủ thông tin!', type: 'error' });
+      return;
+    }
+    for (const q of questions) {
+      if (!q.text.trim()) {
+        openSnackbar({ text: `Vui lòng nhập nội dung cho tất cả câu hỏi!`, type: 'error' });
+        return;
+      }
+    }
 
-    try {
-      const creationPromises = form.assignedTo.map(tdpLeaderId => {
-        const selectedTDP = tdpList.find(tdp => tdp.leaderZaloId === tdpLeaderId);
-        if (!selectedTDP) {
-          console.error(`Không tìm thấy TDP với leaderZaloId: ${tdpLeaderId}`);
-          return Promise.resolve(); // Trả về một promise đã hoàn thành để không làm hỏng Promise.all
+    const assignedTDPInfos = tdpList.filter(tdp => selectedTDPs.includes(tdp.id));
+    
+    if (user) {
+      await createReport({
+        title,
+        priority,
+        dueDate: dueDate.getTime(),
+        questions,
+        assignedTDPs: assignedTDPInfos,
+        assignedBy: {
+            zaloId: user.id,
+            name: user.name
         }
-        const reportDataForTDP = {
-          title: form.title,
-          description: form.description,
-          dueDate: form.dueDate,
-          priority: form.priority,
-          category: form.category,
-          requirements: form.requirements,
-          assignedTo: tdpLeaderId, // Gán cho leader của TDP này
-          tdpName: selectedTDP.name, // <-- Đã có tdpName
-          assignedBy: user?.id || "",
-          createdAt: new Date(),
-          status: "pending" as const,
-        };
-
-        // 3. Gọi hàm createReport và trả về promise
-        // Lưu ý: createReport phải được sửa đổi để nhận đúng params này
-        return createReport(reportDataForTDP); 
       });
-
-      // Chờ cho tất cả các báo cáo được tạo xong
-      await Promise.all(creationPromises);
-
-      toast.success(`Đã tạo thành công ${form.assignedTo.length} báo cáo!`);
-      navigate("/report"); // Chuyển về trang danh sách
-
-    } catch (error) {
-      console.error("Error creating reports:", error);
-      toast.error("Có lỗi xảy ra khi tạo báo cáo");
+      openSnackbar({ text: 'Tạo và giao báo cáo thành công!', type: 'success' });
+      navigate(-1);
     }
   };
-  
-  const priorityOptions = [
-    { value: "low", label: "Thấp", color: "text-green-600" },
-    { value: "medium", label: "Trung bình", color: "text-yellow-600" },
-    { value: "high", label: "Cao", color: "text-red-600" },
-  ];
-
-  const categoryOptions = [
-    { value: "monthly", label: "Báo cáo tháng" },
-    { value: "quarterly", label: "Báo cáo quý" },
-    { value: "yearly", label: "Báo cáo năm" },
-    { value: "special", label: "Báo cáo đặc biệt" },
-    { value: "survey", label: "Khảo sát" },
-  ];
 
   return (
-    <PageLayout title="Tạo báo cáo mới" showBackIcon>
-      <Container>
-        {/* Thông tin cơ bản */}
-        <Card>
-          <Text className="text-lg font-semibold mb-4">Thông tin báo cáo</Text>
-          
-          <FormGroup>
-            <Label>Tiêu đề báo cáo *</Label>
-            <Input
-              placeholder="Nhập tiêu đề báo cáo..."
-              value={form.title}
-              onChange={(e) => handleInputChange("title", e.target.value)}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Mô tả *</Label>
-            <Input.TextArea
-              placeholder="Mô tả chi tiết về báo cáo..."
-              value={form.description}
-              onChange={(e) => handleInputChange("description", e.target.value)}
-              rows={7}
-              className="w-full p-2 border rounded"
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Loại báo cáo</Label>
-            <Select
-              value={form.category}
-              onChange={(value) => handleInputChange("category", value)}
-            >
-              <option value="">Chọn loại báo cáo</option>
-              {categoryOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Select>
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Yêu cầu đặc biệt</Label>
-            <Input.TextArea
-              placeholder="Các yêu cầu đặc biệt, định dạng báo cáo..."
-              value={form.requirements}
-              onChange={(e) => handleInputChange("requirements", e.target.value)}
-              rows={3}
-            />
-          </FormGroup>
-        </Card>
-
-        {/* Cài đặt thời hạn và ưu tiên */}
-        <Card>
-          <Text className="text-lg font-semibold mb-4">Cài đặt</Text>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <FormGroup>
-              <Label>Hạn báo cáo *</Label>
+    <PageLayout title="Tạo Báo Cáo Mới" id="create-report">
+      <Box className="flex-1 overflow-auto bg-gray-100 p-4">
+        {!canCreate ? (
+          <Box className="p-6 text-center bg-white rounded-lg shadow-sm">
+              <Icon icon="zi-lock" size={48} className="text-red-500 mb-4" />
+              <Text.Title size="normal" className="mb-2">
+                  Không có quyền truy cập
+              </Text.Title>
+              <Text className="text-gray-600">
+                  Chức năng này chỉ dành cho Quản trị viên và Điều hành viên.
+              </Text>
+          </Box>
+        ) : (
+          <>
+            <Box className="bg-white p-4 rounded-lg shadow-sm mb-4">
+              <Input label="Tiêu đề báo cáo" value={title} onChange={(e) => setTitle(e.target.value)} />
               <DatePicker
-                value={form.dueDate}
-                onChange={(date) => handleInputChange("dueDate", date)}
+                label="Hạn nộp báo cáo"
+                value={dueDate}
+                onChange={setDueDate}
+                placeholder="Chọn ngày"
               />
-            </FormGroup>
-
-            <FormGroup>
-              <Label>Độ ưu tiên</Label>
               <Select
-                value={form.priority}
-                onChange={(value) => handleInputChange("priority", value)}
+                label="Mức độ ưu tiên"
+                value={priority}
+                onChange={(val) => {
+                  if (val === 'low' || val === 'medium' || val === 'high') {
+                    setPriority(val);
+                  }
+                }}
               >
-                {priorityOptions.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
+                <Select.Option value="low" title="Thấp" />
+                <Select.Option value="medium" title="Trung bình" />
+                <Select.Option value="high" title="Cao" />
               </Select>
-            </FormGroup>
-          </div>
-        </Card>
+            </Box>
 
-        {/* Chọn TDP */}
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <Text className="text-lg font-semibold">
-              Chọn TDP ({form.assignedTo.length} đã chọn)
-            </Text>
-            <Button
-              variant="tertiary"
-              size="small"
-              onClick={handleSelectAll}
-            >
-              {selectAll ? "Bỏ chọn tất cả" : "Chọn tất cả"}
-            </Button>
-          </div>
-
-          {loadingTDP ? (
-            <div className="flex justify-center py-8">
-              <Text>Đang tải danh sách TDP...</Text>
-            </div>
-          ) : (
-            <TDPList>
-              {tdpList.map((tdp) => (
-                <TDPItem
-                  key={tdp.id}
-                  selected={form.assignedTo.includes(tdp.leaderZaloId)}
-                  onClick={() => handleTDPSelection(tdp.leaderZaloId)}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Text className="font-medium">{tdp.name}</Text>
-                      <Text className="text-sm text-gray-600">
-                        Tổ trưởng: {tdp.leaderName}
-                      </Text>
-                    </div>
-                    {form.assignedTo.includes(tdp.leaderZaloId) && (
-                      <Icon icon="zi-check-circle" className="text-blue-500" />
-                    )}
-                  </div>
-                </TDPItem>
+            <Box className="bg-white p-4 rounded-lg shadow-sm mb-4">
+              <h2 className="text-lg font-semibold mb-2">Nội dung báo cáo</h2>
+              {questions.map((q, index) => (
+                  <QuestionEditor
+                      key={q.id}
+                      question={q}
+                      index={index}
+                      onChange={handleQuestionChange}
+                      onRemove={handleRemoveQuestion}
+                  />
               ))}
-            </TDPList>
-          )}
-        </Card>
+              <Button fullWidth variant="secondary" onClick={handleAddQuestion}>
+                  + Thêm câu hỏi
+              </Button>
+            </Box>
 
-        {/* Action buttons */}
-        <ButtonGroup>
-          <Button
-            variant="secondary"
-            onClick={() => navigate(-1)}
-            className="flex-1"
-          >
-            Hủy
+            <Box className="bg-white p-4 rounded-lg shadow-sm mb-4">
+              <h2 className="text-lg font-semibold mb-2">Giao cho Tổ dân phố</h2>
+              <div className="max-h-48 overflow-y-auto">
+              {tdpList.map((tdp) => (
+                  <Checkbox
+                      key={tdp.id}
+                      value={tdp.id}
+                      checked={selectedTDPs.includes(tdp.id)}
+                      onChange={() => handleTDPSelectionChange(tdp.id)}
+                  >
+                      {tdp.name} ({tdp.leaderName})
+                  </Checkbox>
+              ))}
+              </div>
+            </Box>
+          </>
+        )}
+      </Box>
+      
+      {canCreate && (
+        <Box className="p-4 bg-white shadow-top">
+          <Button fullWidth onClick={handleSubmit} loading={loading}>
+            Tạo và Giao báo cáo
           </Button>
-          <Button
-            variant="primary"
-            onClick={handleSubmit}
-            className="flex-1"
-          >
-            Tạo báo cáo
-          </Button>
-        </ButtonGroup>
-      </Container>
+        </Box>
+      )}
     </PageLayout>
   );
 };
