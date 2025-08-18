@@ -25,6 +25,9 @@ const RoleSwitcher = () => {
             <Text.Title size="small">Bảng điều khiển DEV</Text.Title>
             <Text size="xSmall" className="text-gray-600 mb-2">
                 Vai trò hiện tại: <span className="font-bold">{currentRole}</span>
+                {currentUser?.name && (
+                    <span className="ml-2">({currentUser.name})</span>
+                )}
             </Text>
             <Box flex className="gap-2 flex-wrap">
                 {roles.map((role) => (
@@ -41,6 +44,7 @@ const RoleSwitcher = () => {
         </Box>
     );
 };
+
 const HomePage: React.FunctionComponent = () => {
   const { organization, getNews } = useStore((state) => ({
     organization: state.organization,
@@ -61,7 +65,7 @@ const HomePage: React.FunctionComponent = () => {
         />
       }
     >
-      <RoleSwitcher /> {/* Giữ lại bảng điều khiển DEV nếu bạn vẫn cần */}
+      <RoleSwitcher />
       <Utinities utinities={APP_UTINITIES} />
       <NewsSection />
     </PageLayout>

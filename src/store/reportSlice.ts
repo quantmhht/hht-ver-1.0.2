@@ -1,6 +1,7 @@
 import { StateCreator } from 'zustand';
+import dayjs from 'dayjs';
 import { State } from './index';
-import { Report, TDPInfo, Answer } from '../types/report';
+import { Report, TDPInfo, Answer, ReportStatus } from '../types/report';
 import {
   createReportInService,
   getReports,
@@ -11,7 +12,6 @@ import {
   deleteTDPInService,
 } from '../service/reportService';
 import { getUserRole } from '../utils/auth';
-import dayjs from 'dayjs';
 
 interface ReportStats {
   total: number;
@@ -117,7 +117,7 @@ export const createReportSlice: StateCreator<State, [], [], ReportSlice> = (set,
   },
 
   submitAnswers: async (reportId, answers) => {
-    const updates = { submittedAnswers: sanitizeForFirestore(answers) };
+    const updates = { submittedAnswers: sanitizeForFirestore(answers),status: "submitted" as ReportStatus };
     await updateReportInService(reportId, updates);
     await get().fetchReports();
   },

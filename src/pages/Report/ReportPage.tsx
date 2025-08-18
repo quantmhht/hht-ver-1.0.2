@@ -118,7 +118,7 @@ const ReportPage: React.FC = () => {
   return (
     <PageLayout title="Báo cáo Tổ dân phố" id="reports">
       <WelcomeContainer>
-        <Text.Title className="text-white mb-1">
+        <Text.Title className="text-blue-600 mb-1">
           Xin chào, {user?.name || 'Guest'}!
         </Text.Title>
         <Text className="text-blue-100">
@@ -131,22 +131,22 @@ const ReportPage: React.FC = () => {
       <StatsContainer>
         <Box className="grid grid-cols-2 gap-4">
           <Box className="text-center">
-            <Text className="text-2xl font-bold text-blue-600">{reportStats.totalReports}</Text>
             <StatLabel>Tổng báo cáo</StatLabel>
+            <Text className="text-2xl font-bold text-blue-600">{reportStats.totalReports}</Text>
           </Box>
           <Box className="text-center">
-            <Text className="text-2xl font-bold text-green-600">{reportStats.completedReports}</Text>
             <StatLabel>Hoàn thành</StatLabel>
+            <Text className="text-2xl font-bold text-green-600">{reportStats.completedReports}</Text>
           </Box>
         </Box>
         <Box className="grid grid-cols-2 gap-4 mt-4">
           <Box className="text-center">
-            <Text className="text-2xl font-bold text-orange-600">{reportStats.pendingReports}</Text>
             <StatLabel>Chờ xử lý</StatLabel>
+            <Text className="text-2xl font-bold text-orange-600">{reportStats.pendingReports}</Text>
           </Box>
           <Box className="text-center">
-            <Text className="text-2xl font-bold text-red-600">{reportStats.overdueReports}</Text>
             <StatLabel>Quá hạn</StatLabel>
+            <Text className="text-2xl font-bold text-red-600">{reportStats.overdueReports}</Text>
           </Box>
         </Box>
         <Box className="mt-4 p-3 bg-gray-50 rounded-lg">

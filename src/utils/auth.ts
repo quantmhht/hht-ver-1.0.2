@@ -1,6 +1,6 @@
 // src/utils/auth.ts
 import { ADMIN_ZALO_IDS, MOD_ZALO_IDS, LEADER_ZALO_IDS } from "@constants/roles";
-import React from "react"
+
 export type UserRole = "admin" | "mod" | "leader" | "citizen";
 
 export interface AuthUser {
@@ -89,11 +89,11 @@ export const hasPermission = (zaloId: string, permission: Permission): boolean =
  * Lấy thông tin TDP của tổ trưởng
  */
 export const getTDPInfo = async (zaloId: string): Promise<string | null> => {
-  // Mapping tạm thời, sau này có thể lưu vào Firebase
+  // Mapping với TDP thực tế đã tạo
   const tdpMapping: Record<string, string> = {
-    "zalo_id_cua_tdp_1": "TDP Số 1",
+    "1234567890123456789": "TDP Liên Vinh", // Nguyễn A
     "zalo_id_cua_tdp_2": "TDP Số 2",
-    // Thêm mapping khác...
+    // Thêm mapping khác khi tạo thêm TDP...
   };
   
   return tdpMapping[zaloId] || null;
