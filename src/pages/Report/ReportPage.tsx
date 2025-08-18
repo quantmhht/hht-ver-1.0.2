@@ -4,6 +4,8 @@ import { Box, Text, Button, Icon } from "zmp-ui";
 import { getUserRole, canAccessReports } from "../../utils/auth";
 import { AdminReportView } from "./components/AdminReportView";
 import { LeaderReportView } from "./components/LeaderReportView";
+import ExportButton from "../../components/report/ExportButton";
+import { excelExportService } from "../../service/excelExportService";
 import styled from "styled-components";
 import tw from "twin.macro";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +36,10 @@ const NotificationBadge = styled.div`
   ${tw`absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center`}
 `;
 
+const ExportSection = styled(Box)`
+  ${tw`p-4 bg-gray-50 border-t`}
+`;
+
 const ReportPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, reports, fetchReports, updateReportStatus } = useStore((state) => state);
@@ -44,7 +50,6 @@ const ReportPage: React.FC = () => {
     }
   };
 
-  // ✅ Sử dụng getUserRole và canAccessReports với fallback
   const userRole = getUserRole(user?.idByOA, user?.id);
   const hasAccess = canAccessReports(user?.idByOA, user?.id);
 
@@ -52,7 +57,7 @@ const ReportPage: React.FC = () => {
     if (hasAccess) {
       fetchReports();
     }
-  }, [user?.idByOA, user?.id, hasAccess]); // ✅ Thêm dependencies
+  }, [user?.idByOA, user?.id, hasAccess]);
 
   const reportStats = useMemo(() => {
     const relevantReports = reports;
@@ -76,6 +81,17 @@ const ReportPage: React.FC = () => {
     };
   }, [reports]);
 
+  // Lấy tên TDP nếu user là leader
+  const userTDPName = useMemo(() => {
+    if (userRole === 'leader' && user) {
+      const userReport = reports.find(r => 
+        r.assignedTo.zaloId === user.idByOA || r.assignedTo.zaloId === user.id
+      );
+      return userReport?.assignedTo.tdpName;
+    }
+    return undefined;
+  }, [userRole, user, reports]);
+
   if (!user) {
     return (
       <PageLayout title="Báo cáo Tổ dân phố" id="reports">
@@ -98,7 +114,6 @@ const ReportPage: React.FC = () => {
             <Text className="text-gray-600">
               Đây là mục dành riêng cho UBND phường và các tổ trưởng tổ dân phố.
             </Text>
-            {/* ✅ Debug info trong development */}
             {import.meta.env.DEV && (
               <Box className="mt-4 p-3 bg-gray-100 rounded text-left">
                 <Text size="xSmall" className="font-mono">
@@ -135,7 +150,6 @@ const ReportPage: React.FC = () => {
             ? "Quản lý báo cáo của tổ dân phố"
             : "Theo dõi tiến độ báo cáo các TDP"}
         </Text>
-        {/* ✅ Debug info trong development */}
         {import.meta.env.DEV && (
           <Text className="text-blue-200 text-xs mt-1">
             Role: {userRole} | IDs: {user?.idByOA || 'N/A'}, {user?.id || 'N/A'}
@@ -207,6 +221,74 @@ const ReportPage: React.FC = () => {
       <Box className="mt-4 px-4">
         {renderUserSpecificView()}
       </Box>
+
+      {/* ✅ Export Section */}
+      {reportStats.totalReports > 0 && (
+        <ExportSection>
+          <Box className="flex items-center justify-between mb-3">
+            <Box>
+              <Text.Title size="small">Xuất báo cáo Excel</Text.Title>
+              <Text size="xSmall" className="text-gray-600">
+                {userRole === 'leader' && userTDPName 
+                  ? `Xuất báo cáo của ${userTDPName}`
+                  : `Xuất ${reportStats.totalReports} báo cáo`
+                }
+              </Text>
+            </Box>
+            <ExportButton 
+              reports={reports}
+              tdpName={userTDPName}
+              variant="primary"
+              size="medium"
+            />
+          </Box>
+          
+          {/* Quick export buttons cho admin/mod */}
+          {(userRole === "admin" || userRole === "mod") && (
+            <Box className="grid grid-cols-3 gap-2">
+              <Button
+                size="small"
+                variant="tertiary"
+                onClick={() => {
+                  try {
+                    excelExportService.exportReportSummary(reports);
+                  } catch (error) {
+                    console.error('Quick export error:', error);
+                  }
+                }}
+              >
+                <Icon icon="zi-list-1" /> Tổng quan
+              </Button>
+              <Button
+                size="small"
+                variant="tertiary"
+                onClick={() => {
+                  try {
+                    excelExportService.exportReportDetails(reports);
+                  } catch (error) {
+                    console.error('Quick export error:', error);
+                  }
+                }}
+              >
+                <Icon icon="zi-note" /> Chi tiết
+              </Button>
+              <Button
+                size="small"
+                variant="tertiary"
+                onClick={() => {
+                  try {
+                    excelExportService.exportReportStats(reports);
+                  } catch (error) {
+                    console.error('Quick export error:', error);
+                  }
+                }}
+              >
+                <Icon icon="zi-poll" /> Thống kê
+              </Button>
+            </Box>
+          )}
+        </ExportSection>
+      )}
     </PageLayout>
   );
 };
