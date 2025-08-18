@@ -3,12 +3,13 @@ import { useStore } from "../../store";
 import { Box, Text, Button, Input, Modal, Icon, useSnackbar } from "zmp-ui";
 import { useNavigate } from "react-router-dom";
 import { TDPInfo } from "../../types/report";
-import PageLayout from "@components/layout/PageLayout"; // ✅ Dùng layout chung
+import { getUserRole } from "../../utils/auth";
+import PageLayout from "@components/layout/PageLayout";
 
 const ManageTDPPage: React.FC = () => {
   const navigate = useNavigate();
   const { openSnackbar } = useSnackbar();
-  const { tdpList, fetchTDPList, addTDP, updateTDP, deleteTDP, loading } = useStore();
+  const { user, tdpList, fetchTDPList, addTDP, updateTDP, deleteTDP, loading } = useStore();
 
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -16,9 +17,15 @@ const ManageTDPPage: React.FC = () => {
   const [selectedTDP, setSelectedTDP] = useState<TDPInfo | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  // ✅ Sử dụng getUserRole với fallback
+  const userRole = getUserRole(user?.idByOA, user?.id);
+  const canManage = userRole === 'admin' || userRole === 'mod';
+
   useEffect(() => {
-    fetchTDPList();
-  }, []);
+    if (canManage) {
+      fetchTDPList();
+    }
+  }, [canManage]);
 
   const handleInputChange = (field: keyof TDPInfo, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -76,21 +83,48 @@ const ManageTDPPage: React.FC = () => {
   return (
     <PageLayout title="Quản lý Tổ dân phố" id="manage-tdp">
       <Box className="flex-1 overflow-auto bg-gray-100 p-4">
-        <Button fullWidth onClick={handleAddNew} className="mb-4">
-          <Icon icon="zi-plus" /> Thêm TDP mới
-        </Button>
-        {tdpList.map((tdp) => (
-          <Box key={tdp.id} className="bg-white p-4 rounded-lg shadow-sm mb-3">
-            <Text.Title>{tdp.name}</Text.Title>
-            <Text size="small" className="text-gray-600">
-              Tổ trưởng: {tdp.leaderName} ({tdp.leaderZaloId})
+        {!canManage ? (
+          <Box className="p-6 text-center bg-white rounded-lg shadow-sm">
+            <Icon icon="zi-lock" size={48} className="text-red-500 mb-4" />
+            <Text.Title size="normal" className="mb-2">
+              Không có quyền truy cập
+            </Text.Title>
+            <Text className="text-gray-600">
+              Chức năng này chỉ dành cho Quản trị viên và Điều hành viên.
             </Text>
-            <Box mt={2} className="flex justify-end space-x-2">
-              <Button size="small" variant="secondary" onClick={() => handleEdit(tdp)}>Sửa</Button>
-              <Button size="small" className="bg-red-500 text-white" onClick={() => openDeleteConfirm(tdp)}>Xóa</Button>
-            </Box>
+            
+            {/* ✅ Debug info trong development */}
+            {import.meta.env.DEV && user && (
+              <Box className="mt-4 p-3 bg-gray-100 rounded text-left">
+                <Text size="xSmall" className="font-mono">
+                  Debug Info:<br/>
+                  User ID: {user.id || 'N/A'}<br/>
+                  User idByOA: {user.idByOA || 'N/A'}<br/>
+                  Detected Role: {userRole}<br/>
+                  Can Manage: {canManage ? 'YES' : 'NO'}
+                </Text>
+              </Box>
+            )}
           </Box>
-        ))}
+        ) : (
+          <>
+            <Button fullWidth onClick={handleAddNew} className="mb-4">
+              <Icon icon="zi-plus" /> Thêm TDP mới
+            </Button>
+            {tdpList.map((tdp) => (
+              <Box key={tdp.id} className="bg-white p-4 rounded-lg shadow-sm mb-3">
+                <Text.Title>{tdp.name}</Text.Title>
+                <Text size="small" className="text-gray-600">
+                  Tổ trưởng: {tdp.leaderName} ({tdp.leaderZaloId})
+                </Text>
+                <Box mt={2} className="flex justify-end space-x-2">
+                  <Button size="small" variant="secondary" onClick={() => handleEdit(tdp)}>Sửa</Button>
+                  <Button size="small" className="bg-red-500 text-white" onClick={() => openDeleteConfirm(tdp)}>Xóa</Button>
+                </Box>
+              </Box>
+            ))}
+          </>
+        )}
       </Box>
 
       {/* Add/Edit Modal */}

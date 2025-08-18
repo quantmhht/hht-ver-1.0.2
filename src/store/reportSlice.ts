@@ -76,18 +76,30 @@ export const createReportSlice: StateCreator<State, [], [], ReportSlice> = (set,
     try {
       const { user } = get();
       if (!user) {
+        console.log("📊 No user found, skipping report fetch");
         set({ reports: [], loading: false });
         return;
       }
-      const zaloId = user.idByOA;
-      const role = getUserRole(zaloId);
+      
+      // ✅ Sử dụng getUserRole với fallback
+      const role = getUserRole(user.idByOA, user.id);
+      console.log(`📊 Fetching reports for role: ${role}`);
+      
       let allReports = await getReports();
-      if (role === 'leader' && zaloId) {
-        allReports = allReports.filter((r) => r.assignedTo.zaloId === zaloId);
+      
+      // Lọc báo cáo cho tổ trưởng
+      if (role === 'leader') {
+        // Thử cả idByOA và id để tìm báo cáo được giao
+        const userIds = [user.idByOA, user.id].filter(Boolean);
+        allReports = allReports.filter((r) => 
+          userIds.some(id => r.assignedTo.zaloId === id)
+        );
+        console.log(`📊 Filtered ${allReports.length} reports for leader with IDs: ${userIds.join(', ')}`);
       }
+      
       set({ reports: allReports });
     } catch (error) {
-      console.error('Failed to fetch reports:', error);
+      console.error('❌ Failed to fetch reports:', error);
     } finally {
       set({ loading: false });
     }
@@ -98,7 +110,7 @@ export const createReportSlice: StateCreator<State, [], [], ReportSlice> = (set,
       const tdps = await getTDPListInService();
       set({ tdpList: tdps });
     } catch (error) {
-      console.error('Failed to fetch TDP list:', error);
+      console.error('❌ Failed to fetch TDP list:', error);
     }
   },
 
@@ -109,7 +121,7 @@ export const createReportSlice: StateCreator<State, [], [], ReportSlice> = (set,
       await createReportInService(cleanedData);
       await get().fetchReports();
     } catch (error) {
-      console.error('Failed to create report:', error);
+      console.error('❌ Failed to create report:', error);
       throw error;
     } finally {
       set({ loading: false });

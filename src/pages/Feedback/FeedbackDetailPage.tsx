@@ -60,7 +60,9 @@ const FeedbackDetailPage: React.FC = () => {
     ]);
 
     const [responseText, setResponseText] = useState("");
-    const userRole = getUserRole(user?.idByOA);
+    
+    // ✅ Sử dụng getUserRole với fallback
+    const userRole = getUserRole(user?.idByOA, user?.id);
     const isAdmin = userRole === "admin" || userRole === "mod";
 
     useEffect(() => {
@@ -107,6 +109,15 @@ const FeedbackDetailPage: React.FC = () => {
                 <Title>{feedback?.title}</Title>
                 <Hr />
                 <Content>{feedback?.content}</Content>
+                
+                {/* ✅ Debug info trong development */}
+                {import.meta.env.DEV && (
+                    <Box className="mt-4 p-2 bg-gray-100 rounded text-xs">
+                        <Text size="xSmall" className="font-mono">
+                            Debug: Role={userRole}, isAdmin={isAdmin}, IDs: {user?.idByOA || 'N/A'}, {user?.id || 'N/A'}
+                        </Text>
+                    </Box>
+                )}
             </Container>
 
             <Container p={4}>

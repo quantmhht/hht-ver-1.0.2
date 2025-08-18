@@ -8,7 +8,7 @@ import { useStore } from '../../store';
 import { Question, QuestionType, TDPInfo } from '../../types/report';
 import QuestionEditor from './components/QuestionEditor';
 import { getUserRole } from '../../utils/auth';
-import PageLayout from "@components/layout/PageLayout"; // ✅ Dùng layout chung
+import PageLayout from "@components/layout/PageLayout";
 
 const CreateReportPage = () => {
   const navigate = useNavigate();
@@ -24,7 +24,8 @@ const CreateReportPage = () => {
     })
   );
 
-  const userRole = getUserRole(user?.idByOA);
+  // ✅ Sử dụng getUserRole với fallback
+  const userRole = getUserRole(user?.idByOA, user?.id);
   const canCreate = userRole === 'admin' || userRole === 'mod';
 
   useEffect(() => {
@@ -111,6 +112,19 @@ const CreateReportPage = () => {
               <Text className="text-gray-600">
                   Chức năng này chỉ dành cho Quản trị viên và Điều hành viên.
               </Text>
+              
+              {/* ✅ Debug info trong development */}
+              {import.meta.env.DEV && user && (
+                <Box className="mt-4 p-3 bg-gray-100 rounded text-left">
+                  <Text size="xSmall" className="font-mono">
+                    Debug Info:<br/>
+                    User ID: {user.id || 'N/A'}<br/>
+                    User idByOA: {user.idByOA || 'N/A'}<br/>
+                    Detected Role: {userRole}<br/>
+                    Can Create: {canCreate ? 'YES' : 'NO'}
+                  </Text>
+                </Box>
+              )}
           </Box>
         ) : (
           <>

@@ -8,7 +8,7 @@ import styled from "styled-components";
 import tw from "twin.macro";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
-import PageLayout from "@components/layout/PageLayout"; // ✅ Dùng layout chung
+import PageLayout from "@components/layout/PageLayout";
 
 const WelcomeContainer = styled(Box)`
   ${tw`p-6 text-white`}
@@ -44,14 +44,15 @@ const ReportPage: React.FC = () => {
     }
   };
 
-  const zaloId = user?.idByOA;
-  const userRole = getUserRole(zaloId);
+  // ✅ Sử dụng getUserRole và canAccessReports với fallback
+  const userRole = getUserRole(user?.idByOA, user?.id);
+  const hasAccess = canAccessReports(user?.idByOA, user?.id);
 
   useEffect(() => {
-    if (canAccessReports(zaloId)) {
+    if (hasAccess) {
       fetchReports();
     }
-  }, [zaloId]);
+  }, [user?.idByOA, user?.id, hasAccess]); // ✅ Thêm dependencies
 
   const reportStats = useMemo(() => {
     const relevantReports = reports;
@@ -85,7 +86,7 @@ const ReportPage: React.FC = () => {
     );
   }
 
-  if (!canAccessReports(zaloId)) {
+  if (!hasAccess) {
     return (
       <PageLayout title="Không có quyền truy cập" id="reports">
         <Box className="flex-1 overflow-auto bg-gray-100 p-4">
@@ -97,6 +98,14 @@ const ReportPage: React.FC = () => {
             <Text className="text-gray-600">
               Đây là mục dành riêng cho UBND phường và các tổ trưởng tổ dân phố.
             </Text>
+            {/* ✅ Debug info trong development */}
+            {import.meta.env.DEV && (
+              <Box className="mt-4 p-3 bg-gray-100 rounded text-left">
+                <Text size="xSmall" className="font-mono">
+                  Debug: idByOA={user?.idByOA}, id={user?.id}, role={userRole}
+                </Text>
+              </Box>
+            )}
           </Box>
         </Box>
       </PageLayout>
@@ -126,6 +135,12 @@ const ReportPage: React.FC = () => {
             ? "Quản lý báo cáo của tổ dân phố"
             : "Theo dõi tiến độ báo cáo các TDP"}
         </Text>
+        {/* ✅ Debug info trong development */}
+        {import.meta.env.DEV && (
+          <Text className="text-blue-200 text-xs mt-1">
+            Role: {userRole} | IDs: {user?.idByOA || 'N/A'}, {user?.id || 'N/A'}
+          </Text>
+        )}
       </WelcomeContainer>
 
       <StatsContainer>

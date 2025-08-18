@@ -23,16 +23,44 @@ export type Permission =
   | "view_own_reports";     // Xem báo cáo của mình
 
 /**
- * Kiểm tra role của user dựa trên Zalo ID
+ * ✅ Kiểm tra role của user dựa trên Zalo ID (hỗ trợ fallback)
+ * @param idByOA - ID từ OA (ưu tiên)
+ * @param id - ID Zalo thường (fallback)
  */
-export const getUserRole = (zaloId?: string): UserRole => {
-  if (!zaloId) return "citizen";
+export const getUserRole = (idByOA?: string, id?: string): UserRole => {
+  // Danh sách ID để kiểm tra (ưu tiên idByOA, fallback sang id)
+  const userIds = [idByOA, id].filter(Boolean) as string[];
   
-  if (ADMIN_ZALO_IDS.includes(zaloId)) return "admin";
-  if (MOD_ZALO_IDS.includes(zaloId)) return "mod";
-  if (LEADER_ZALO_IDS.includes(zaloId)) return "leader";
+  if (userIds.length === 0) {
+    console.log("🔍 No user ID found, defaulting to citizen");
+    return "citizen";
+  }
+
+  // Kiểm tra từng ID trong danh sách
+  for (const userId of userIds) {
+    if (ADMIN_ZALO_IDS.includes(userId)) {
+      console.log(`🔑 Admin role detected for ID: ${userId}`);
+      return "admin";
+    }
+    if (MOD_ZALO_IDS.includes(userId)) {
+      console.log(`🔑 Mod role detected for ID: ${userId}`);
+      return "mod";
+    }
+    if (LEADER_ZALO_IDS.includes(userId)) {
+      console.log(`🔑 Leader role detected for ID: ${userId}`);
+      return "leader";
+    }
+  }
   
+  console.log(`🔑 No special role found for IDs: ${userIds.join(', ')}, defaulting to citizen`);
   return "citizen";
+};
+
+/**
+ * ✅ Phiên bản tương thích ngược (chỉ nhận idByOA)
+ */
+export const getUserRoleCompat = (idByOA?: string): UserRole => {
+  return getUserRole(idByOA);
 };
 
 /**
@@ -69,18 +97,25 @@ export const getUserPermissions = (role: UserRole): Permission[] => {
 };
 
 /**
- * Kiểm tra user có quyền truy cập báo cáo không
+ * ✅ Kiểm tra user có quyền truy cập báo cáo không (hỗ trợ fallback)
  */
-export const canAccessReports = (zaloId?: string): boolean => {
-  const role = getUserRole(zaloId);
+export const canAccessReports = (idByOA?: string, id?: string): boolean => {
+  const role = getUserRole(idByOA, id);
   return ["admin", "mod", "leader"].includes(role);
 };
 
 /**
- * Kiểm tra user có permission cụ thể không
+ * ✅ Phiên bản tương thích ngược
  */
-export const hasPermission = (zaloId: string, permission: Permission): boolean => {
-  const role = getUserRole(zaloId);
+export const canAccessReportsCompat = (idByOA?: string): boolean => {
+  return canAccessReports(idByOA);
+};
+
+/**
+ * ✅ Kiểm tra user có permission cụ thể không (hỗ trợ fallback)
+ */
+export const hasPermission = (permission: Permission, idByOA?: string, id?: string): boolean => {
+  const role = getUserRole(idByOA, id);
   const permissions = getUserPermissions(role);
   return permissions.includes(permission);
 };

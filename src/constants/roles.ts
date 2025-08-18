@@ -3,12 +3,12 @@
 /**
  * Danh sách Zalo ID của các Admin
  */
-export const ADMIN_ZALO_IDS = ["6149625822422342809"];
+export const ADMIN_ZALO_IDS = ["6149625822422342809", "3368637342326461234"];
 
 /**
  * Danh sách Zalo ID của các Moderator  
  */
-export const MOD_ZALO_IDS = ["1094668219729944831"];
+export const MOD_ZALO_IDS = ["2828312529914362254"];
 
 /**
  * Danh sách Zalo ID của các Tổ trưởng TDP
@@ -16,7 +16,7 @@ export const MOD_ZALO_IDS = ["1094668219729944831"];
  */
 export const LEADER_ZALO_IDS = [
   "1234567890123456789", 
-  "zalo_id_cua_tdp_2"
+  "1094668219729944831"
   // Thêm Zalo ID thực của các tổ trưởng khác
 ];
 
@@ -30,6 +30,6 @@ export const ALL_AUTHORIZED_IDS = [...ADMIN_ZALO_IDS, ...MOD_ZALO_IDS, ...LEADER
  */
 export const TDP_MAPPING: Record<string, string> = {
   "1234567890123456789": "TDP Liên Vinh",
-  "zalo_id_cua_tdp_2": "TDP Số 2",
+  "1094668219729944831": "CT",
   // Thêm mapping cho các tổ trưởng khác khi có Zalo ID thực
 };

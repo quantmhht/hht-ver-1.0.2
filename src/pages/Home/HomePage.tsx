@@ -18,7 +18,8 @@ const RoleSwitcher = () => {
     }
 
     const roles: ("admin" | "mod" | "leader" | "citizen")[] = ["admin", "mod", "leader", "citizen"];
-    const currentRole = getUserRole(currentUser?.idByOA);
+    // ✅ Sử dụng getUserRole với fallback
+    const currentRole = getUserRole(currentUser?.idByOA, currentUser?.id);
 
     return (
         <Box p={4} className="bg-yellow-100 border-b-2 border-yellow-300">
@@ -28,6 +29,10 @@ const RoleSwitcher = () => {
                 {currentUser?.name && (
                     <span className="ml-2">({currentUser.name})</span>
                 )}
+            </Text>
+            {/* ✅ Hiển thị ID để debug */}
+            <Text size="xSmall" className="text-gray-500 mb-2">
+                IDs: idByOA={currentUser?.idByOA}, id={currentUser?.id}
             </Text>
             <Box flex className="gap-2 flex-wrap">
                 {roles.map((role) => (
