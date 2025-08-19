@@ -2,10 +2,11 @@ import React, { FunctionComponent } from "react";
 import styled from "styled-components";
 import tw from "twin.macro";
 import Background from "@assets/background.png";
-import UtinityItem, { UtinityItemProps } from "./UtilityItem";
+import UtinityItem from "./UtilityItem";
+import { Utinity } from "@dts"; // ✅ Import đúng type
 
 interface UtinitiesProps {
-    utinities: UtinityItemProps & { key: string }[];
+    utinities: Utinity[]; // ✅ Sử dụng type Utinity thay vì UtinityItemProps
 }
 
 const UtinitiesWrapper = styled.div`
@@ -14,6 +15,7 @@ const UtinitiesWrapper = styled.div`
     padding: 16px;
     padding-top: 24px;
 `;
+
 const Utinities: FunctionComponent<UtinitiesProps> = props => {
     const { utinities } = props;
     return (

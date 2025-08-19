@@ -3,17 +3,11 @@ import React, { FunctionComponent } from "react";
 import styled from "styled-components";
 import tw from "twin.macro";
 import { Text } from "zmp-ui";
-
+import { Utinity } from "@dts"; // ✅ Import type Utinity
 import WithItem from "./WithItemClick";
 
-export interface UtinityItemProps {
-    label?: string;
-    icon?: React.ElementType<any>;
-    path?: string;
-    onClick?: any;
-    inDevelopment?: boolean;
-    phoneNumber?: string;
-    link?: string;
+// ✅ Sử dụng trực tiếp type Utinity thay vì định nghĩa riêng
+export interface UtinityItemProps extends Utinity {
     handleClickUtinity?: ({
         inDevelopment,
         path,
@@ -53,19 +47,20 @@ const Label = styled(Text)`
 `;
 
 const UtinityItem: FunctionComponent<UtinityItemProps> = props => {
-    const { icon: Icon, label, handleClickUtinity, onClick  } = props;
+    const { icon: Icon, label, handleClickUtinity, onClick } = props;
 
     const handleClick = (
         event: React.MouseEvent<HTMLDivElement, MouseEvent>,
     ) => {
         event.preventDefault();
+        
+        // ✅ Ưu tiên onClick handler tùy chỉnh
         if (onClick) {
             onClick();
         } else {
-        // Nếu không có onClick, dùng logic mặc định
+            // Nếu không có onClick, dùng logic mặc định
             handleClickUtinity?.(props);
         }
-        // --- KẾT THÚC SỬA ĐỔI ---
     };
 
     return (

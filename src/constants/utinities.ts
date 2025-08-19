@@ -1,4 +1,4 @@
-    import * as Icon from "@components/icons";
+import * as Icon from "@components/icons";
     import { Utinity } from "@dts";
     import PhoneIcon from "@assets/internal-phone.png";
 
@@ -25,7 +25,8 @@
         key: "directory",
         label: "Danh bạ",
         icon: Icon.BookIcon,
-        path: "/directory",
+        // ✅ Bỏ path để sử dụng onClick từ HomePage
+        // path: "/directory",
       },
     ];
 
@@ -73,7 +74,6 @@
     phoneNumber: "0989893623", 
   },
 ];
-    // Thêm đoạn mã này vào cuối file src/constants/utinities.ts
 
 export const TDP_LIST = [
   "TDP văn minh",

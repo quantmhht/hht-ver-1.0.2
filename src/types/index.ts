@@ -139,7 +139,9 @@ export type Utinity = {
     link?: string;
     inDevelopment?: boolean;
     phoneNumber?: string;
+    onClick?: () => void; // ✅ Thêm onClick support
 };
+
 export interface News {
       id: string;
       title: string;
