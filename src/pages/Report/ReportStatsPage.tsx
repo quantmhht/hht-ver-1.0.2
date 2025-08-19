@@ -28,6 +28,19 @@ const QuickStatsGrid = styled(Box)`
   ${tw`grid grid-cols-2 md:grid-cols-4 gap-4 mb-6`}
 `;
 
+// 🔧 MOVED: Khai báo functions trước khi sử dụng
+const getStatusText = (status: string): string => {
+  const statusMap: { [key: string]: string } = {
+    'pending': 'Chờ làm',
+    'in_progress': 'Đang làm',
+    'submitted': 'Chờ duyệt',
+    'approved': 'Đã duyệt',
+    'rejected': 'Bị từ chối',
+    'overdue': 'Quá hạn'
+  };
+  return statusMap[status] || status;
+};
+
 const ReportStatsPage: React.FC = () => {
   const navigate = useNavigate();
   const { reports, reportStats, fetchReports, getReportStats } = useStore();
@@ -113,18 +126,6 @@ const ReportStatsPage: React.FC = () => {
     return Array.from(monthMap.values());
   }, [reports]);
 
-  const getStatusText = (status: string): string => {
-    const statusMap: { [key: string]: string } = {
-      'pending': 'Chờ làm',
-      'in_progress': 'Đang làm',
-      'submitted': 'Chờ duyệt',
-      'approved': 'Đã duyệt',
-      'rejected': 'Bị từ chối',
-      'overdue': 'Quá hạn'
-    };
-    return statusMap[status] || status;
-  };
-
   return (
     <PageLayout title="Thống kê Báo cáo" id="report-stats">
       {/* Export Toolbar */}
@@ -189,7 +190,8 @@ const ReportStatsPage: React.FC = () => {
                       cx="50%"
                       cy="50%"
                       outerRadius={80}
-                      label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}                    >
+                      label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                    >
                       {pieChartData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
