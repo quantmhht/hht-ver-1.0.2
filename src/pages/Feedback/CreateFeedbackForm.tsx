@@ -4,22 +4,19 @@ import { useStore } from "@store";
 import React, { useState } from "react";
 import styled from "styled-components";
 import tw from "twin.macro";
-import { Box, Icon, Select, Text, useSnackbar } from "zmp-ui";
+import { Box, Icon, Text, useSnackbar } from "zmp-ui";
 import { ImageType } from "zmp-ui/image-viewer";
 import { useForm, Controller } from "react-hook-form";
 import { useLocation } from "react-router-dom";
-import { TDP_LIST } from "@constants/utinities";
 import { getZaloLocation } from "@service/zalo";
 import SelectFeedbackType from "./SelectFeedbackType";
+import SelectAddress from "./SelectAddress";
 
 const Conainer = styled(Box)`
   ${tw`bg-white`}
 `;
 const SendButton = styled(Button)`
   ${tw`w-full mt-6`}
-`;
-const Label = styled.label`
-  ${tw`block text-sm font-medium text-gray-700 mb-1`}
 `;
 
 // Kiểu dữ liệu cho form đã được cập nhật
@@ -129,26 +126,14 @@ const CreateFeedbackForm: React.FC<CreateFeedbackFormProps> = ({
           />
         </Box>
         <Box mt={4}>
-          <Label>Địa chỉ</Label>
           <Controller
             name="address"
             control={control}
             render={({ field }) => (
-              <Select
+              <SelectAddress
                 value={field.value}
-                onChange={(value) => {
-                  field.onChange(value);
-                }}
-              >
-                <option value="" disabled>
-                  Chọn TDP...
-                </option>
-                {TDP_LIST.map((tdp) => (
-                  <option key={tdp} value={tdp}>
-                    {tdp}
-                  </option>
-                ))}
-              </Select>
+                onChange={field.onChange}
+              />
             )}
           />
         </Box>
@@ -177,7 +162,6 @@ const CreateFeedbackForm: React.FC<CreateFeedbackFormProps> = ({
             <SelectFeedbackType
               value={field.value}
               onChange={field.onChange}
-              readOnly
             />
           )}
         />

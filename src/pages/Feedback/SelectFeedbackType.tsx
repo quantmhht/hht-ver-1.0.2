@@ -1,23 +1,32 @@
-    import { Divider } from "@components";
-    import AppCheckbox from "@components/customized/Checkbox";
-    import React from "react";
+    import React, { useState, useEffect } from "react";
     import styled from "styled-components";
     import tw from "twin.macro";
-    import { Box, Checkbox } from "zmp-ui";
-    import { CheckboxGroupProps, CheckboxValueType } from "zmp-ui/checkbox";
+    import { Box, Radio, Modal, Text, Icon } from "zmp-ui";
+    import { RadioGroupProps, RadioValueType } from "zmp-ui/radio";
 
     const Label = styled.div`
       ${tw`font-medium py-2`}
     `;
-    const FeedbackGroup = styled(Checkbox.Group)`
+    const FeedbackGroup = styled(Radio.Group)`
       ${tw`flex flex-col gap-4 mt-2 text-[#767A7F]`}
     `;
     const FormItem = styled.div``;
+    
+    const SelectButton = styled.div`
+      ${tw`border border-gray-300 rounded-lg p-4 flex items-center justify-between cursor-pointer hover:border-blue-500 transition-colors min-h-[56px]`}
+    `;
+    
+    const SelectedText = styled(Text)`
+      ${tw`flex-1`}
+    `;
+    
+    const PlaceholderText = styled(Text)`
+      ${tw`flex-1 text-gray-400`}
+    `;
 
-    export interface SelectFeedbackTypeProps extends Omit<CheckboxGroupProps, "onChange" | "value"> {
+    export interface SelectFeedbackTypeProps extends Omit<RadioGroupProps, "onChange" | "value"> {
       onChange?: (id: string) => void;
-      value?: CheckboxValueType;
-
+      value?: RadioValueType;
     }
 
     const feedbackTypes = [
@@ -39,25 +48,73 @@
       onChange,
       value,
     }) => {
-      const onChangeType = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onChange?.(e.target.value);
+      const [modalVisible, setModalVisible] = useState(false);
+      const [tempValue, setTempValue] = useState<RadioValueType>(value);
+      
+      // Đồng bộ tempValue khi value thay đổi từ bên ngoài
+      useEffect(() => {
+        setTempValue(value);
+      }, [value]);
+      
+      const selectedType = feedbackTypes.find(type => type.id.toString() === value);
+      
+      const handleConfirm = () => {
+        onChange?.(tempValue as string);
+        setModalVisible(false);
+      };
+      
+      const handleCancel = () => {
+        setTempValue(value);
+        setModalVisible(false);
+      };
+      
+      const onChangeType = (selectedValue: RadioValueType) => {
+        setTempValue(selectedValue);
       };
 
       return (
         <FormItem>
           <Label>Mục phản ánh*</Label>
-          <Box my={4}><Divider /></Box>
-          <FeedbackGroup value={value ? [value] : []}>
-            {feedbackTypes.map((type) => (
-              <AppCheckbox
-                onChange={onChangeType}
-                value={type.id.toString()}
-                key={`fb-type-${type.id}`}
-                label={type.title}
-                checked={value === type.id.toString()}
-              />
-            ))}
-          </FeedbackGroup>
+          <Box my={2}>
+            <SelectButton onClick={() => setModalVisible(true)}>
+              {selectedType ? (
+                <SelectedText>{selectedType.title}</SelectedText>
+              ) : (
+                <PlaceholderText>Chọn mục phản ánh...</PlaceholderText>
+              )}
+              <Icon icon="zi-chevron-right" />
+            </SelectButton>
+          </Box>
+          
+          <Modal
+            visible={modalVisible}
+            onClose={handleCancel}
+            title="Chọn mục phản ánh"
+            actions={[
+              {
+                text: "Hủy",
+                close: true,
+                onClick: handleCancel,
+              },
+              {
+                text: "Xác nhận",
+                highLight: true,
+                onClick: handleConfirm,
+              },
+            ]}
+          >
+            <Box p={4}>
+              <FeedbackGroup value={tempValue} onChange={onChangeType}>
+                {feedbackTypes.map((type) => (
+                  <Radio
+                    value={type.id.toString()}
+                    key={`fb-type-${type.id}`}
+                    label={type.title}
+                  />
+                ))}
+              </FeedbackGroup>
+            </Box>
+          </Modal>
         </FormItem>
       );
     };

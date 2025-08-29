@@ -3,7 +3,7 @@
 /**
  * Danh sách Zalo ID của các Admin
  */
-export const ADMIN_ZALO_IDS = ["6149625822422342809", "3368637342326461234"];
+export const ADMIN_ZALO_IDS = ["6149625822422342809", "3368637342326461234","4955733160204438926","4781338949378083737"];
 
 /**
  * Danh sách Zalo ID của các Moderator  
