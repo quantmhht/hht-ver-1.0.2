@@ -29,7 +29,6 @@ const StyledText = styled(Text)`
 `;
 
 export interface HomeHeaderProps {
-  title?: string;
   name?: string;
 }
 
@@ -43,10 +42,10 @@ const HomeHeader: FC<HomeHeaderProps> = (props) => {
   return (
     <HeaderContainer>
       <LogoWrapper>
-        <img src={Logo} alt="UBND Phường Hà Huy Tập" />
+        <img src={Logo} alt="Phường Hà Huy Tập - tỉnh Hà Tĩnh" />
       </LogoWrapper>
       <Box flex flexDirection="column">
-        <Title>UBND Phường Hà Huy Tập</Title>
+        <Title>Phường Hà Huy Tập - Hà Tĩnh</Title>
         {loading ? (
           <TextItemSkeleton
             color="rgba(255,255,255,0.2)"

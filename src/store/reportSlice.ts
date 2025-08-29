@@ -76,6 +76,7 @@ export const createReportSlice: StateCreator<State, [], [], ReportSlice> = (set,
     try {
       const { user } = get();
       if (!user) {
+        // eslint-disable-next-line no-console
         console.log("📊 No user found, skipping report fetch");
         set({ reports: [], loading: false });
         return;
@@ -83,6 +84,7 @@ export const createReportSlice: StateCreator<State, [], [], ReportSlice> = (set,
       
       // ✅ Sử dụng getUserRole với fallback
       const role = getUserRole(user.idByOA, user.id);
+      // eslint-disable-next-line no-console
       console.log(`📊 Fetching reports for role: ${role}`);
       
       let allReports = await getReports();
@@ -94,11 +96,13 @@ export const createReportSlice: StateCreator<State, [], [], ReportSlice> = (set,
         allReports = allReports.filter((r) => 
           userIds.some(id => r.assignedTo.zaloId === id)
         );
+        // eslint-disable-next-line no-console
         console.log(`📊 Filtered ${allReports.length} reports for leader with IDs: ${userIds.join(', ')}`);
       }
       
       set({ reports: allReports });
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('❌ Failed to fetch reports:', error);
     } finally {
       set({ loading: false });
@@ -110,6 +114,7 @@ export const createReportSlice: StateCreator<State, [], [], ReportSlice> = (set,
       const tdps = await getTDPListInService();
       set({ tdpList: tdps });
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('❌ Failed to fetch TDP list:', error);
     }
   },
@@ -121,6 +126,7 @@ export const createReportSlice: StateCreator<State, [], [], ReportSlice> = (set,
       await createReportInService(cleanedData);
       await get().fetchReports();
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('❌ Failed to create report:', error);
       throw error;
     } finally {
@@ -144,7 +150,7 @@ export const createReportSlice: StateCreator<State, [], [], ReportSlice> = (set,
   },
 
   getReportStats: () => {
-    const reports = get().reports;
+    const {reports} = get();
     const total = reports.length;
     const completed = reports.filter((r) => r.status === 'approved').length;
     const pending = total - completed;

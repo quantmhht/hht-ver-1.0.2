@@ -83,6 +83,7 @@ const feedbackSlice: StateCreator<FeedbackSlice> = (set, get) => ({
             }));
             return rs;
         } catch (error) {
+            // eslint-disable-next-line no-console
             console.error("Error creating feedback:", error);
             return false;
         } finally {
@@ -126,6 +127,7 @@ const feedbackSlice: StateCreator<FeedbackSlice> = (set, get) => ({
                 },
             }));
         } catch (err) {
+            // eslint-disable-next-line no-console
             console.error("Error getting feedbacks:", err);
             set(state => ({
                 ...state,
@@ -147,6 +149,7 @@ const feedbackSlice: StateCreator<FeedbackSlice> = (set, get) => ({
                 feedbackTypes,
             }));
         } catch (err) {
+            // eslint-disable-next-line no-console
             console.error("Error getting feedback types:", err);
             set(state => ({
                 ...state,
@@ -160,6 +163,7 @@ const feedbackSlice: StateCreator<FeedbackSlice> = (set, get) => ({
             const feedback = await getFeedbackDetail(params.id);
             set(state => ({ ...state, feedbackDetail: feedback }));
         } catch (err) {
+            // eslint-disable-next-line no-console
             console.error("Error getting feedback detail:", err);
         }
     },
@@ -173,6 +177,7 @@ const feedbackSlice: StateCreator<FeedbackSlice> = (set, get) => ({
             }
             return success;
         } catch (error) {
+            // eslint-disable-next-line no-console
             console.error("Error replying to feedback:", error);
             return false;
         } finally {

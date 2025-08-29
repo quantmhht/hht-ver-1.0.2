@@ -133,28 +133,34 @@ const FeedbackDetailPage: React.FC = () => {
                 <Hr />
                 
                 {/* --- Logic hiển thị có điều kiện --- */}
-                {feedback?.response ? (
-                    <Response>{feedback.response}</Response>
-                ) : isAdmin ? (
-                    <Box>
-                        <TextArea
-                            label="Nội dung trả lời"
-                            placeholder="Nhập nội dung trả lời..."
-                            value={responseText}
-                            onChange={(e) => setResponseText(e.target.value)}
-                        />
-                        <Button
-                            fullWidth
-                            className="mt-4"
-                            onClick={handleReplySubmit}
-                            loading={replying}
-                        >
-                            Gửi trả lời
-                        </Button>
-                    </Box>
-                ) : (
-                    <Text size="xSmall" className="text-gray-500">Chưa có phản hồi từ cơ quan chức năng.</Text>
-                )}
+                {(() => {
+                    if (feedback?.response) {
+                        return <Response>{feedback.response}</Response>;
+                    }
+                    
+                    if (isAdmin) {
+                        return (
+                            <Box>
+                                <TextArea
+                                    label="Nội dung trả lời"
+                                    placeholder="Nhập nội dung trả lời..."
+                                    value={responseText}
+                                    onChange={(e) => setResponseText(e.target.value)}
+                                />
+                                <Button
+                                    fullWidth
+                                    className="mt-4"
+                                    onClick={handleReplySubmit}
+                                    loading={replying}
+                                >
+                                    Gửi trả lời
+                                </Button>
+                            </Box>
+                        );
+                    }
+                    
+                    return <Text size="xSmall" className="text-gray-500">Chưa có phản hồi từ cơ quan chức năng.</Text>;
+                })()}
             </Container>
         </PageLayout>
     );

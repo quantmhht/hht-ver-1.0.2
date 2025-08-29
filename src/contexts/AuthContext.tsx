@@ -1,7 +1,7 @@
 // src/contexts/AuthContext.tsx
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 // import { TDP_MAPPING } from "@constants/roles"; // Sẽ dùng getTDPInfo thay thế
-import { AuthUser, UserRole, Permission, getUserRole, getUserPermissions, getTDPInfo } from '../utils/auth';
+import { AuthUser, getUserRole, getUserPermissions, getTDPInfo } from '../utils/auth';
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -36,6 +36,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         await login(savedZaloId);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Auth initialization error:', error);
     } finally {
       setIsLoading(false);
@@ -64,6 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setZaloId(userZaloId);
       localStorage.setItem('zaloId', userZaloId);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Login error:', error);
       throw error;
     }
@@ -75,14 +77,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('zaloId');
   };
 
+  const contextValue = useMemo(() => ({
+    user,
+    zaloId,
+    isLoading,
+    login,
+    logout
+  }), [user, zaloId, isLoading]);
+
   return (
-    <AuthContext.Provider value={{
-      user,
-      zaloId,
-      isLoading,
-      login,
-      logout
-    }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

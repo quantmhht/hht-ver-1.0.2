@@ -48,13 +48,11 @@ class ExcelExportService {
    * 📊 Xuất báo cáo tổng quan
    */
   exportReportSummary(reports: Report[]): void {
-    console.log('📊 Exporting summary for', reports.length, 'reports');
     
     const summaryData: ReportSummaryData[] = reports.map(report => {
       const questionsCount = report.questions?.length || 0;
       const answersCount = report.submittedAnswers?.length || 0;
       
-      console.log(`📋 Report ${report.id}: ${questionsCount} questions, ${answersCount} answers`);
       
       return {
         reportId: report.id,
@@ -103,48 +101,23 @@ class ExcelExportService {
    * 📋 Xuất báo cáo chi tiết (bao gồm câu trả lời) - FIXED VERSION
    */
   exportReportDetails(reports: Report[]): void {
-    console.log('📋 Exporting details for', reports.length, 'reports');
     
     const detailData: ReportDetailData[] = [];
     
     reports.forEach((report, reportIndex) => {
-      console.log(`\n🔍 Processing Report ${reportIndex + 1}:`, {
-        id: report.id,
-        title: report.title,
-        questionsCount: report.questions?.length || 0,
-        answersCount: report.submittedAnswers?.length || 0,
-        hasSubmittedAnswers: !!report.submittedAnswers
-      });
 
       // 🐛 FIX: Kiểm tra cả submittedAnswers và questions
       if (!report.questions || report.questions.length === 0) {
-        console.warn(`⚠️ Report ${report.id} has no questions`);
         return;
       }
 
-      // 🔥 LOG: Chi tiết questions và answers
-      console.log('📝 Questions:', report.questions.map(q => ({ id: q.id, text: q.text.substring(0, 50) + '...' })));
-      if (report.submittedAnswers) {
-        console.log('💬 Answers:', report.submittedAnswers.map(a => ({ 
-          questionId: a.questionId, 
-          value: typeof a.value === 'string' ? a.value.substring(0, 50) + '...' : a.value 
-        })));
-      }
 
       // 🆕 IMPROVED: Lặp qua TẤT CẢ questions, không chỉ những có answer
       report.questions.forEach((question, questionIndex) => {
-        console.log(`  📝 Processing Question ${questionIndex + 1}:`, {
-          questionId: question.id,
-          text: question.text.substring(0, 30) + '...',
-          type: question.type
-        });
 
         // Tìm answer tương ứng
         const answer = report.submittedAnswers?.find(a => a.questionId === question.id);
         
-        console.log(`    💬 Answer found:`, !!answer, answer ? {
-          value: typeof answer.value === 'string' ? answer.value.substring(0, 30) + '...' : answer.value
-        } : 'No answer');
 
         const answerValue = this.formatAnswerValue(question, answer);
         
@@ -157,15 +130,13 @@ class ExcelExportService {
           questionText: question.text,
           questionType: this.getQuestionTypeText(question.type),
           isRequired: question.isRequired ? 'Có' : 'Không',
-          answerValue: answerValue,
+          answerValue,
           submittedAt: report.submittedAt ? dayjs(report.submittedAt).format('DD/MM/YYYY HH:mm') : '',
         });
 
-        console.log(`    ✅ Added to export: ${answerValue}`);
       });
     });
 
-    console.log(`📊 Total detail rows to export: ${detailData.length}`);
 
     // 🆕 Group by report to verify data
     const groupedData = detailData.reduce((acc, row) => {
@@ -174,10 +145,6 @@ class ExcelExportService {
       return acc;
     }, {} as Record<string, ReportDetailData[]>);
 
-    console.log('📊 Grouped data summary:');
-    Object.entries(groupedData).forEach(([reportId, rows]) => {
-      console.log(`  📋 ${reportId}: ${rows.length} questions`);
-    });
 
     const exportData: ExportData = {
       fileName: `BaoCao_ChiTiet_${dayjs().format('DDMMYYYY_HHmm')}.xlsx`,
@@ -208,7 +175,6 @@ class ExcelExportService {
    * 📊 Xuất thống kê báo cáo
    */
   exportReportStats(reports: Report[]): void {
-    console.log('📊 Exporting stats for', reports.length, 'reports');
     
     // Sheet 1: Thống kê tổng quan
     const statsData = this.generateStatsData(reports);
@@ -249,7 +215,6 @@ class ExcelExportService {
   exportTDPReport(reports: Report[], tdpName: string): void {
     const tdpReports = reports.filter(r => r.assignedTo.tdpName === tdpName);
     
-    console.log(`📋 Exporting TDP report for ${tdpName}:`, tdpReports.length, 'reports');
     
     if (tdpReports.length === 0) {
       throw new Error(`Không tìm thấy báo cáo nào cho TDP ${tdpName}`);
@@ -299,12 +264,10 @@ class ExcelExportService {
    * 🏗️ Generate Excel file
    */
   private generateExcel(exportData: ExportData): void {
-    console.log('🏗️ Generating Excel file:', exportData.fileName);
     
     const workbook = XLSX.utils.book_new();
 
     exportData.sheets.forEach((sheet, sheetIndex) => {
-      console.log(`📝 Processing sheet ${sheetIndex + 1}: ${sheet.name} (${sheet.data.length} rows)`);
       
       let worksheet: XLSX.WorkSheet;
 
@@ -319,11 +282,6 @@ class ExcelExportService {
         )];
         worksheet = XLSX.utils.aoa_to_sheet(dataWithHeaders);
         
-        console.log(`  📊 Sheet data preview:`, {
-          headers: sheet.headers,
-          sampleRow: sheet.data[0],
-          totalRows: dataWithHeaders.length
-        });
       } else {
         // Tạo worksheet từ object
         worksheet = XLSX.utils.json_to_sheet(sheet.data);
@@ -340,7 +298,6 @@ class ExcelExportService {
     const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     saveAs(blob, exportData.fileName);
     
-    console.log('✅ Excel file generated and downloaded successfully');
   }
 
   /**
@@ -435,27 +392,18 @@ class ExcelExportService {
    */
   private formatAnswerValue(question: Question, answer?: Answer): string {
     if (!answer || !answer.value) {
-      console.log(`    ⚠️ No answer for question ${question.id}`);
       return 'Chưa trả lời';
     }
 
-    console.log(`    🔧 Formatting answer:`, {
-      questionType: question.type,
-      answerValue: answer.value,
-      answerType: typeof answer.value,
-      isArray: Array.isArray(answer.value)
-    });
 
     if (question.type === QuestionType.SHORT_ANSWER) {
       const result = answer.value as string;
-      console.log(`    ✅ Short answer result: "${result}"`);
       return result;
     }
 
     if (question.type === QuestionType.SINGLE_CHOICE) {
       const option = question.options?.find(opt => opt.id === answer.value);
       const result = option?.value || 'Không rõ';
-      console.log(`    ✅ Single choice result: "${result}" (option ID: ${answer.value})`);
       return result;
     }
 
@@ -465,11 +413,9 @@ class ExcelExportService {
         selectedValues.includes(opt.id)
       );
       const result = selectedOptions?.map(opt => opt.value).join(', ') || 'Không rõ';
-      console.log(`    ✅ Multiple choice result: "${result}" (selected IDs: ${selectedValues.join(', ')})`);
       return result;
     }
 
-    console.log(`    ❓ Unknown question type: ${question.type}`);
     return 'Không rõ';
   }
 
@@ -509,7 +455,7 @@ class ExcelExportService {
     const tdpMap = new Map<string, any>();
 
     reports.forEach(report => {
-      const tdpName = report.assignedTo.tdpName;
+      const {tdpName} = report.assignedTo;
       if (!tdpMap.has(tdpName)) {
         tdpMap.set(tdpName, {
           name: tdpName,

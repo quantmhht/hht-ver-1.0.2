@@ -2,10 +2,10 @@ import React, { FC } from "react";
 import { Box, Text, Button } from "zmp-ui";
 import { useStore } from "@store";
 import { useNavigate } from "react-router-dom";
-import { NewsList } from "./NewsList";
 import { getUserRole } from "@utils/auth";
 import styled from "styled-components";
 import tw from "twin.macro";
+import { NewsList } from "./NewsList";
 
 const SectionContainer = styled(Box)`
   ${tw`bg-white p-4 mt-2`}

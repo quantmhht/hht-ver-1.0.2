@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useStore } from "../../store";
 import { Box, Text, Button, useSnackbar } from "zmp-ui";
 import dayjs from "dayjs";
 import PageLayout from "@components/layout/PageLayout"; // ✅ Dùng layout chung
+import { useStore } from "../../store";
 
 const ReportDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -60,7 +60,7 @@ const ReportDetailPage: React.FC = () => {
         <Box className="bg-white p-4 rounded-lg shadow-sm">
           <Text.Title size="small">Câu hỏi</Text.Title>
           {report.questions.map((q: any, index: number) => (
-            <Box key={index} className="mt-2">
+            <Box key={`question-${index}-${q.text.slice(0, 20)}`} className="mt-2">
               <Text className="font-semibold">{q.text}</Text>
               {q.answer && <Text className="text-gray-600">Trả lời: {q.answer}</Text>}
             </Box>

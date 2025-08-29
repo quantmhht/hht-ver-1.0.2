@@ -4,7 +4,7 @@ import tw from "twin.macro";
 import { Box, Icon, ImageViewer } from "zmp-ui";
 import { ImageType } from "zmp-ui/image-viewer";
 import { pickImages } from "@service/zalo";
-import { API, BASE_URL, MAX_FEEDBACK_IMAGES } from "@constants/common";
+import { MAX_FEEDBACK_IMAGES } from "@constants/common";
 import { useStore } from "@store";
 import { ChangeHandler } from "react-hook-form";
 
@@ -92,7 +92,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 {imageUrls &&
                     imageUrls.map((img, index) => (
                         <Image
-                            key={`img-${index}`}
+                            key={`img-${img.name}`}
                             src={img.src}
                             alt=""
                             onClick={() => {

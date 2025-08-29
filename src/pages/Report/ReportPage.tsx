@@ -1,16 +1,16 @@
 import React, { useEffect, useMemo } from "react";
-import { useStore } from "../../store";
 import { Box, Text, Button, Icon } from "zmp-ui";
-import { getUserRole, canAccessReports } from "../../utils/auth";
-import { AdminReportView } from "./components/AdminReportView";
-import { LeaderReportView } from "./components/LeaderReportView";
-import ExportButton from "../../components/report/ExportButton";
-import { excelExportService } from "../../service/excelExportService";
 import styled from "styled-components";
 import tw from "twin.macro";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import PageLayout from "@components/layout/PageLayout";
+import { useStore } from "../../store";
+import { getUserRole, canAccessReports } from "../../utils/auth";
+import { AdminReportView } from "./components/AdminReportView";
+import { LeaderReportView } from "./components/LeaderReportView";
+import ExportButton from "../../components/report/ExportButton";
+import { excelExportService } from "../../service/excelExportService";
 
 const WelcomeContainer = styled(Box)`
   ${tw`p-6 text-white`}
@@ -253,6 +253,7 @@ const ReportPage: React.FC = () => {
                   try {
                     excelExportService.exportReportSummary(reports);
                   } catch (error) {
+                    // eslint-disable-next-line no-console
                     console.error('Quick export error:', error);
                   }
                 }}
@@ -266,6 +267,7 @@ const ReportPage: React.FC = () => {
                   try {
                     excelExportService.exportReportDetails(reports);
                   } catch (error) {
+                    // eslint-disable-next-line no-console
                     console.error('Quick export error:', error);
                   }
                 }}
@@ -279,6 +281,7 @@ const ReportPage: React.FC = () => {
                   try {
                     excelExportService.exportReportStats(reports);
                   } catch (error) {
+                    // eslint-disable-next-line no-console
                     console.error('Quick export error:', error);
                   }
                 }}

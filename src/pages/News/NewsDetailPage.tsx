@@ -35,16 +35,29 @@
               <Box mt={4}>
                 <Swiper>
                   {article.images.map((img, index) => (
-                    <Swiper.Slide key={index}>
-                      <img
-                        src={img}
-                        alt={`image-${index}`}
-                        className="w-full h-auto rounded-lg"
+                    <Swiper.Slide key={`${article.id}-img-${img}`}>
+                      <button
+                        type="button"
+                        className="w-full h-auto rounded-lg cursor-pointer border-none p-0 bg-transparent"
                         onClick={() => {
                           setActiveIndex(index);
                           setVisible(true);
                         }}
-                      />
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setActiveIndex(index);
+                            setVisible(true);
+                          }
+                        }}
+                        aria-label={`View ${article.title} image ${index + 1}`}
+                      >
+                        <img
+                          src={img}
+                          alt={`${article.title} ${index + 1}`}
+                          className="w-full h-auto rounded-lg"
+                        />
+                      </button>
                     </Swiper.Slide>
                   ))}
                 </Swiper>

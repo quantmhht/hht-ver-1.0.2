@@ -3,10 +3,10 @@ import React from 'react';
 import { Text } from 'zmp-ui';
 import styled from 'styled-components';
 import tw from 'twin.macro';
-import { ReportStatus, ReportPriority } from '../../../types/report';
 import dayjs from 'dayjs';
 import 'dayjs/locale/vi';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { ReportStatus, ReportPriority } from '../../../types/report';
 
 dayjs.locale('vi');
 dayjs.extend(relativeTime);

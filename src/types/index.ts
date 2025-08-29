@@ -1,4 +1,4 @@
-import { FC } from "react";
+import React from "react";
 
 export type ResData<T> = {
     data?: T;
@@ -142,13 +142,6 @@ export type Utinity = {
     onClick?: () => void; // ✅ Thêm onClick support
 };
 
-export interface News {
-      id: string;
-      title: string;
-      thumbnail: string;
-      content: string;
-      images: string[];
-    };
 export interface News {
       id: string;
       title: string;

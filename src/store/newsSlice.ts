@@ -1,12 +1,12 @@
 // src/store/newsSlice.ts
 import { StateCreator } from "zustand";
+import { News } from "@dts";
 import {   
   getNews as getNewsService, 
   addNews as addNewsService,
   updateNews as updateNewsService,
   deleteNews as deleteNewsService,
   NewsData } from "../service/services"; // ← Đảm bảo import đúng
-import { News } from "@dts";
 import { State } from "./index";
 
 
@@ -28,6 +28,7 @@ export const createNewsSlice: StateCreator<State, [], [], NewsSlice> = (set, get
       const newsList = await getNewsService(params);
       set({ news: newsList, loadingNews: false });
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Failed to fetch news:", error);
       set({ news: [], loadingNews: false });
     }
@@ -42,6 +43,7 @@ export const createNewsSlice: StateCreator<State, [], [], NewsSlice> = (set, get
       }
       return false;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Failed to add news:", error);
       return false;
     }
@@ -55,6 +57,7 @@ export const createNewsSlice: StateCreator<State, [], [], NewsSlice> = (set, get
       }
       return success;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Failed to update news:", error);
       return false;
     }
@@ -71,6 +74,7 @@ export const createNewsSlice: StateCreator<State, [], [], NewsSlice> = (set, get
       }
       return success;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Failed to delete news:", error);
       return false;
     }

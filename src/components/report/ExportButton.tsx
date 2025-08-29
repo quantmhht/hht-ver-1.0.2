@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Button, Modal, List, useSnackbar, Box, Text, Checkbox, Input, Icon } from 'zmp-ui';
-import { Report } from '../../types/report';
-import { excelExportService } from '../../service/excelExportService';
+import { Button, Modal, List, useSnackbar, Box, Text, Checkbox, Input } from 'zmp-ui';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 
 // 🎨 Styled components
-import { Download, FileText, BarChart2, Users, List as ListIcon, ChevronRight, Search, Filter } from 'lucide-react';
+import { FileText, BarChart2, Users, List as ListIcon, ChevronRight, Search, Filter } from 'lucide-react';
+import { excelExportService } from '../../service/excelExportService';
+import { Report } from '../../types/report';
 
 const ExportModal = styled(Modal)`
   .zaui-modal-content {
@@ -14,7 +14,7 @@ const ExportModal = styled(Modal)`
   }
 `;
 
-const ExportOption = styled(List.Item)`
+const StyledExportOption = styled(List.Item)`
   ${tw`cursor-pointer hover:bg-gray-50`}
   .zaui-list-item-content {
     ${tw`py-3`}
@@ -98,6 +98,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({
         type: 'success',
       });
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Export error:', error);
       openSnackbar({
         text: `Lỗi khi xuất ${optionName}: ${(error as Error).message}`,
@@ -130,18 +131,8 @@ const ExportButton: React.FC<ExportButtonProps> = ({
       setExporting(true);
       setReportSelectionVisible(false);
 
-      // 🐛 Debug: Log dữ liệu trước khi xuất
+      // eslint-disable-next-line no-console
       console.log('🔍 Exporting reports:', reportsToExport.length);
-      reportsToExport.forEach((report, index) => {
-        console.log(`📋 Report ${index + 1}:`, {
-          id: report.id,
-          title: report.title,
-          questionsCount: report.questions?.length || 0,
-          answersCount: report.submittedAnswers?.length || 0,
-          questions: report.questions?.map(q => ({ id: q.id, text: q.text })),
-          answers: report.submittedAnswers?.map(a => ({ questionId: a.questionId, value: a.value }))
-        });
-      });
 
       switch (currentExportType) {
         case 'summary':
@@ -162,6 +153,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({
         type: 'success',
       });
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Selective export error:', error);
       openSnackbar({
         text: `Lỗi khi xuất báo cáo: ${(error as Error).message}`,
@@ -231,7 +223,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({
         variant={variant}
         size={size === 'small' ? 'medium' : size}
         fullWidth={fullWidth}
-        disabled={true}
+        disabled
         className={className}
       >
         Không có dữ liệu
@@ -300,7 +292,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({
                 )}
                 
                 {/* Nút xuất tất cả */}
-                <ExportOption
+                <StyledExportOption
                   onClick={option.action}
                   prefix={option.icon}
                   suffix={<ChevronRight className="w-5 h-5 text-gray-400" />}
@@ -309,7 +301,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({
                     <Text className="font-semibold">{option.title}</Text>
                     <DescriptionText>{option.description}</DescriptionText>
                   </Box>
-                </ExportOption>
+                </StyledExportOption>
               </Box>
             ))}
           </List>
@@ -326,7 +318,7 @@ const ExportButton: React.FC<ExportButtonProps> = ({
       {/* 🆕 Report Selection Modal */}
       <ReportSelectionModal
         visible={reportSelectionVisible}
-        title={`Chọn báo cáo để xuất`}
+        title="Chọn báo cáo để xuất"
         onClose={() => setReportSelectionVisible(false)}
       >
         {/* Search và Filter Header */}

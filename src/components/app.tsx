@@ -1,8 +1,8 @@
 import { MINI_APP_ID } from "@constants/common";
 import Routes from "@pages";
 import { useStore } from "@store";
-import React, { useEffect, useState, createContext, useContext } from "react";
-import { App, Modal, Button } from "zmp-ui";
+import React, { useEffect, useState, createContext, useContext, useMemo } from "react";
+import { App, Modal } from "zmp-ui";
 import Auth from "./Auth";
 
 // Context cho Error Management
@@ -68,35 +68,11 @@ const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         setNotification(prev => ({ ...prev, visible: false }));
     };
 
-    const getModalStyle = () => {
-        switch (notification.type) {
-            case 'error':
-                return {
-                    titleColor: '#ff4757',
-                    iconColor: '#ff4757'
-                };
-            case 'success':
-                return {
-                    titleColor: '#2ed573',
-                    iconColor: '#2ed573'
-                };
-            case 'warning':
-                return {
-                    titleColor: '#ffa502',
-                    iconColor: '#ffa502'
-                };
-            default:
-                return {
-                    titleColor: '#333',
-                    iconColor: '#333'
-                };
-        }
-    };
 
-    const style = getModalStyle();
+    const contextValue = useMemo(() => ({ showError, showSuccess, showWarning }), []);
 
     return (
-        <ErrorContext.Provider value={{ showError, showSuccess, showWarning }}>
+        <ErrorContext.Provider value={contextValue}>
             {children}
             <Modal
                 visible={notification.visible}
@@ -124,22 +100,17 @@ const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 };
 
 // Component thay thế ErrorNotification
-const ErrorNotification = () => {
+const ErrorNotification = () => 
     // Component này giờ có thể empty vì logic đã chuyển vào ErrorProvider
-    return null;
-};
+     null
+;
 
 const MyApp = () => {
-    const { token, getAccessToken, organization, getOrganization, user } = useStore(state => ({
+    const { token, getAccessToken, getOrganization } = useStore(state => ({
         token: state.token,
         getAccessToken: state.getAccessToken,
-        organization: state.organization,
         getOrganization: state.getOrganization,
-        user: state.user,
     }));
-
-    // Thêm state để theo dõi quá trình tải dữ liệu ban đầu
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const initializeApp = async () => {
@@ -151,15 +122,13 @@ const MyApp = () => {
                 // Sau khi có token, lấy thông tin organization
                 await getOrganization({ miniAppId: MINI_APP_ID });
             } catch (error) {
+                // eslint-disable-next-line no-console
                 console.error("Initialization error:", error);
-            } finally {
-                // Dù thành công hay thất bại, kết thúc quá trình tải
-                setLoading(false);
             }
         };
 
         initializeApp();
-    }, []); // Chỉ chạy một lần khi ứng dụng khởi động
+    }, [token, getAccessToken, getOrganization]); // Chỉ chạy một lần khi ứng dụng khởi động
 
     // Hiển thị màn hình chờ nếu chưa tải xong
 
@@ -175,14 +144,12 @@ const MyApp = () => {
 };
 
 // Main App Component với ErrorProvider wrapper
-const AppWithErrorProvider = () => {
-    return (
-        <App>
-            <ErrorProvider>
-                <MyApp />
-            </ErrorProvider>
-        </App>
-    );
-};
+const AppWithErrorProvider = () => (
+    <App>
+        <ErrorProvider>
+            <MyApp />
+        </ErrorProvider>
+    </App>
+);
 
 export default AppWithErrorProvider;

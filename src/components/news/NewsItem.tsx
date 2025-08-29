@@ -17,7 +17,7 @@ export const NewsItem: FC<{ news: News }> = ({ news }) => {
   const navigate = useNavigate();
   return (
     <ItemContainer onClick={() => navigate(`/news/${news.id}`)}>
-      <Thumbnail src={news.thumbnail} onError={(e: any) => e.target.src = 'https://placehold.co/600x400/CCCCCC/FFF?text=Error'} />
+      <Thumbnail src={news.thumbnail} onError={(e: any) => { e.target.src = 'https://placehold.co/600x400/CCCCCC/FFF?text=Error'; }} />
       <Text size="small" className="line-clamp-2">
         {news.title}
       </Text>

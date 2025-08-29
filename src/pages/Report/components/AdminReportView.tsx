@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Text, Tabs, Spinner } from 'zmp-ui';
+import { Box, Text, Tabs } from 'zmp-ui';
 import styled from 'styled-components';
 import tw from 'twin.macro';
 import { useNavigate } from 'react-router-dom';

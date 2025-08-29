@@ -26,16 +26,10 @@ const SubmitReportModal: React.FC<SubmitReportModalProps> = ({ report, onClose }
 
   useEffect(() => {
     if (report) {
-      console.log('🔄 Initializing answers for report:', {
-        reportId: report.id,
-        questionsCount: report.questions?.length || 0,
-        questions: report.questions?.map(q => ({ id: q.id, text: q.text.substring(0, 50) + '...' }))
-      });
 
       // 🆕 IMPROVED: Khởi tạo answers cho TẤT CẢ câu hỏi
-      const initialAnswers = report.questions.map((q, index) => {
+      const initialAnswers = report.questions.map((q) => {
         const initialValue = q.type === QuestionType.MULTIPLE_CHOICE ? [] : '';
-        console.log(`  📝 Question ${index + 1} (${q.id}): type=${q.type}, initialValue=`, initialValue);
         
         return {
           questionId: q.id,
@@ -43,7 +37,6 @@ const SubmitReportModal: React.FC<SubmitReportModalProps> = ({ report, onClose }
         };
       });
       
-      console.log('✅ Initial answers created:', initialAnswers);
       setAnswers(initialAnswers);
     } else {
       setAnswers([]);
@@ -51,23 +44,12 @@ const SubmitReportModal: React.FC<SubmitReportModalProps> = ({ report, onClose }
   }, [report]);
 
   const handleAnswerChange = (questionId: string, value: string | string[]) => {
-    console.log('📝 Answer changed:', {
-      questionId,
-      value,
-      valueType: typeof value,
-      isArray: Array.isArray(value)
-    });
 
     setAnswers(prevAnswers => {
       const updatedAnswers = prevAnswers.map(ans =>
         ans.questionId === questionId ? { ...ans, value } : ans
       );
       
-      console.log('🔄 Updated answers state:', updatedAnswers.map(a => ({
-        questionId: a.questionId,
-        value: a.value,
-        hasValue: !!a.value && (Array.isArray(a.value) ? a.value.length > 0 : a.value.trim().length > 0)
-      })));
       
       return updatedAnswers;
     });
@@ -76,14 +58,8 @@ const SubmitReportModal: React.FC<SubmitReportModalProps> = ({ report, onClose }
   const renderQuestionInput = (question: Question) => {
     const answer = answers.find(a => a.questionId === question.id);
     
-    console.log(`🎨 Rendering question ${question.id}:`, {
-      questionType: question.type,
-      hasAnswer: !!answer,
-      currentValue: answer?.value
-    });
 
     if (!answer) {
-      console.warn(`⚠️ No answer found for question ${question.id}`);
       return null;
     }
 
@@ -95,7 +71,6 @@ const SubmitReportModal: React.FC<SubmitReportModalProps> = ({ report, onClose }
             required={question.isRequired}
             value={answer.value as string}
             onChange={e => {
-              console.log(`📝 Short answer change for ${question.id}:`, e.target.value);
               handleAnswerChange(question.id, e.target.value);
             }}
             className="mt-2"
@@ -113,7 +88,6 @@ const SubmitReportModal: React.FC<SubmitReportModalProps> = ({ report, onClose }
               value={answer.value as string}
               onChange={(val) => {
                 const stringValue = String(val);
-                console.log(`📝 Single choice change for ${question.id}:`, stringValue);
                 handleAnswerChange(question.id, stringValue);
               }}
             >
@@ -134,7 +108,6 @@ const SubmitReportModal: React.FC<SubmitReportModalProps> = ({ report, onClose }
               value={answer.value as string[]}
               onChange={(vals) => {
                 const stringVals = vals.map(v => String(v));
-                console.log(`📝 Multiple choice change for ${question.id}:`, stringVals);
                 handleAnswerChange(question.id, stringVals);
               }}
             >
@@ -146,6 +119,7 @@ const SubmitReportModal: React.FC<SubmitReportModalProps> = ({ report, onClose }
         );
         
       default:
+        // eslint-disable-next-line no-console
         console.error(`❌ Unknown question type: ${question.type}`);
         return null;
     }
@@ -153,64 +127,49 @@ const SubmitReportModal: React.FC<SubmitReportModalProps> = ({ report, onClose }
 
   const handleSubmit = async () => {
     if (!report || !user) {
+      // eslint-disable-next-line no-console
       console.error('❌ Cannot submit: missing report or user');
       return;
     }
 
-    console.log('🚀 Starting submission validation...');
-    console.log('📋 Report questions:', report.questions.length);
-    console.log('💬 Current answers:', answers.length);
 
     // 🆕 IMPROVED: Validation với detailed logging
-    for (const question of report.questions) {
-      console.log(`🔍 Validating question ${question.id} (required: ${question.isRequired})`);
+    const requiredQuestions = report.questions.filter(q => q.isRequired);
+    const invalidQuestion = requiredQuestions.find(question => {
+      const answer = answers.find(a => a.questionId === question.id);
       
-      if (question.isRequired) {
-        const answer = answers.find(a => a.questionId === question.id);
-        
-        if (!answer) {
-          console.error(`❌ Missing answer for required question: ${question.id}`);
-          openSnackbar({ text: `Vui lòng trả lời câu hỏi: "${question.text}"`, type: 'error' });
-          return;
-        }
-        
-        const isEmpty = Array.isArray(answer.value) 
-          ? answer.value.length === 0 
-          : !answer.value || answer.value.trim() === '';
-        
-        console.log(`  📝 Answer validation:`, {
-          questionId: question.id,
-          answerValue: answer.value,
-          isEmpty,
-          isArray: Array.isArray(answer.value)
-        });
-        
-        if (isEmpty) {
-          console.error(`❌ Empty answer for required question: ${question.id}`);
-          openSnackbar({ text: `Vui lòng trả lời câu hỏi: "${question.text}"`, type: 'error' });
-          return;
-        }
+      if (!answer) {
+        // eslint-disable-next-line no-console
+        console.error(`❌ Missing answer for required question: ${question.id}`);
+        return true;
       }
-    }
-
-    // 🐛 DEBUG: Log final answers before submission
-    console.log('✅ Validation passed. Final answers to submit:');
-    answers.forEach((answer, index) => {
-      console.log(`  ${index + 1}. Question ${answer.questionId}:`, {
-        value: answer.value,
-        type: typeof answer.value,
-        isEmpty: Array.isArray(answer.value) ? answer.value.length === 0 : !answer.value
-      });
+      
+      const isEmpty = Array.isArray(answer.value) 
+        ? answer.value.length === 0 
+        : !answer.value || answer.value.trim() === '';
+      
+      if (isEmpty) {
+        // eslint-disable-next-line no-console
+        console.error(`❌ Empty answer for required question: ${question.id}`);
+        return true;
+      }
+      
+      return false;
     });
 
+    if (invalidQuestion) {
+      openSnackbar({ text: `Vui lòng trả lời câu hỏi: "${invalidQuestion.text}"`, type: 'error' });
+      return;
+    }
+
+
     try {
-      console.log('🚀 Submitting answers to store...');
       await submitAnswers(report.id, answers);
       
-      console.log('✅ Answers submitted successfully');
       openSnackbar({ text: 'Nộp báo cáo thành công!', type: 'success' });
       onClose();
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('❌ Error submitting answers:', error);
       openSnackbar({ text: 'Có lỗi xảy ra khi nộp báo cáo!', type: 'error' });
     }
@@ -228,7 +187,7 @@ const SubmitReportModal: React.FC<SubmitReportModalProps> = ({ report, onClose }
     >
       <Header 
         title={report?.title || "Nộp báo cáo"} 
-        showBackIcon={true}
+        showBackIcon
         onBackClick={onClose} 
       />
       <Box p={4} className="overflow-y-auto" style={{maxHeight: '70vh'}}>

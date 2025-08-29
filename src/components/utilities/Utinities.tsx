@@ -2,8 +2,8 @@ import React, { FunctionComponent } from "react";
 import styled from "styled-components";
 import tw from "twin.macro";
 import Background from "@assets/background.png";
-import UtinityItem from "./UtilityItem";
 import { Utinity } from "@dts"; // ✅ Import đúng type
+import UtinityItem from "./UtilityItem";
 
 interface UtinitiesProps {
     utinities: Utinity[]; // ✅ Sử dụng type Utinity thay vì UtinityItemProps

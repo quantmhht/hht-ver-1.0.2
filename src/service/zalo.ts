@@ -85,6 +85,7 @@ export const pickImages = async (
         const { data } = res;
         // Nếu data rỗng hoặc không phải là chuỗi JSON hợp lệ, trả về mảng rỗng
         if (!data || typeof data !== 'string') {
+            // eslint-disable-next-line no-console
             console.log("Người dùng đã hủy hoặc không có dữ liệu trả về.");
             return [];
         }
@@ -103,6 +104,7 @@ export const pickImages = async (
         return uploadedImgUrls;
 
     } catch (err) {
+        // eslint-disable-next-line no-console
         console.error("Lỗi khi chọn hoặc tải ảnh:", err);
         // Quan trọng: Trả về mảng rỗng khi có bất kỳ lỗi nào xảy ra
         // (bao gồm cả trường hợp người dùng nhấn nút 'Hủy')
@@ -112,7 +114,10 @@ export const pickImages = async (
 export const getZaloLocation = async (): Promise<{latitude: string, longitude: string} | null> => {
   try {
     const { latitude, longitude } = await getLocation({
-      fail: (err) => console.error("Lỗi khi lấy vị trí:", err),
+      fail: (err) => {
+        // eslint-disable-next-line no-console
+        console.error("Lỗi khi lấy vị trí:", err);
+      },
     });
 
     if (latitude && longitude) {
@@ -120,6 +125,7 @@ export const getZaloLocation = async (): Promise<{latitude: string, longitude: s
     }
     return null;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Lỗi khi gọi API getLocation:", error);
     return null;
   }

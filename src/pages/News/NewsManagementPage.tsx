@@ -157,7 +157,7 @@ const NewsManagementPage: React.FC = () => {
               title={article.title}
             >
               <Text size="xSmall" className="text-gray-500 truncate">{article.content}</Text>
-              <Box className="flex space-x-2 mt-2"></Box>
+              <Box className="flex space-x-2 mt-2" />
               <Box className="flex space-x-2 mt-2">
                 <Button
                   size="small"
@@ -218,9 +218,9 @@ const NewsManagementPage: React.FC = () => {
               <Button onClick={handleAddImage} icon={<Icon icon="zi-plus" />} />
             </Box>
             <Box className="mt-2 space-y-2">
-              {formData.images.map((img, index) => (
+              {formData.images.map((img) => (
                 <Box
-                  key={index}
+                  key={img}
                   className="flex items-center justify-between p-2 bg-gray-100 rounded"
                 >
                   <Text className="truncate text-xs">{img}</Text>

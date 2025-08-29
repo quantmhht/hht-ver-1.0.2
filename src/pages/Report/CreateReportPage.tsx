@@ -4,11 +4,11 @@ import {
   DatePicker, Checkbox, Text, Icon,
 } from 'zmp-ui';
 import { useNavigate } from 'react-router-dom';
+import PageLayout from "@components/layout/PageLayout";
 import { useStore } from '../../store';
 import { Question, QuestionType, TDPInfo } from '../../types/report';
 import QuestionEditor from './components/QuestionEditor';
 import { getUserRole } from '../../utils/auth';
-import PageLayout from "@components/layout/PageLayout";
 
 const CreateReportPage = () => {
   const navigate = useNavigate();
@@ -74,11 +74,10 @@ const CreateReportPage = () => {
       openSnackbar({ text: 'Vui lòng điền đầy đủ thông tin!', type: 'error' });
       return;
     }
-    for (const q of questions) {
-      if (!q.text.trim()) {
-        openSnackbar({ text: `Vui lòng nhập nội dung cho tất cả câu hỏi!`, type: 'error' });
-        return;
-      }
+    const emptyQuestion = questions.find(q => !q.text.trim());
+    if (emptyQuestion) {
+      openSnackbar({ text: `Vui lòng nhập nội dung cho tất cả câu hỏi!`, type: 'error' });
+      return;
     }
 
     const assignedTDPInfos = tdpList.filter(tdp => selectedTDPs.includes(tdp.id));

@@ -1,14 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useStore } from "../../store";
 import { Box, Text, Button, Tabs, Icon } from "zmp-ui";
 import { useNavigate } from "react-router-dom";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
-import ExportButton from "../../components/report/ExportButton";
-import { excelExportService } from "../../service/excelExportService";
 import PageLayout from "@components/layout/PageLayout";
 import styled from "styled-components";
 import tw from "twin.macro";
 import dayjs from "dayjs";
+import { excelExportService } from "../../service/excelExportService";
+import ExportButton from "../../components/report/ExportButton";
+import { useStore } from "../../store";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF4560'];
 
@@ -41,9 +41,16 @@ const getStatusText = (status: string): string => {
   return statusMap[status] || status;
 };
 
+const getRankingBadgeClass = (index: number): string => {
+  if (index === 0) return 'bg-yellow-500';
+  if (index === 1) return 'bg-gray-400';
+  if (index === 2) return 'bg-orange-500';
+  return 'bg-blue-500';
+};
+
 const ReportStatsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { reports, reportStats, fetchReports, getReportStats } = useStore();
+  const { reports, fetchReports, getReportStats } = useStore();
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
@@ -84,7 +91,7 @@ const ReportStatsPage: React.FC = () => {
     const tdpMap = new Map<string, any>();
 
     reports.forEach(report => {
-      const tdpName = report.assignedTo.tdpName;
+      const {tdpName} = report.assignedTo;
       if (!tdpMap.has(tdpName)) {
         tdpMap.set(tdpName, {
           name: tdpName,
@@ -95,9 +102,9 @@ const ReportStatsPage: React.FC = () => {
       }
 
       const stats = tdpMap.get(tdpName);
-      stats.total++;
-      if (report.status === 'approved') stats.completed++;
-      if (['pending', 'in_progress'].includes(report.status)) stats.pending++;
+      stats.total += 1;
+      if (report.status === 'approved') stats.completed += 1;
+      if (['pending', 'in_progress'].includes(report.status)) stats.pending += 1;
     });
 
     return Array.from(tdpMap.values());
@@ -118,8 +125,8 @@ const ReportStatsPage: React.FC = () => {
       const createdMonth = dayjs(report.history[0]?.timestamp || report.dueDate).format('MM/YYYY');
       if (monthMap.has(createdMonth)) {
         const stats = monthMap.get(createdMonth);
-        stats.total++;
-        if (report.status === 'approved') stats.completed++;
+        stats.total += 1;
+        if (report.status === 'approved') stats.completed += 1;
       }
     });
 
@@ -193,7 +200,7 @@ const ReportStatsPage: React.FC = () => {
                       label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                     >
                       {pieChartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        <Cell key={`cell-${entry.name}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip />
@@ -230,6 +237,7 @@ const ReportStatsPage: React.FC = () => {
                     try {
                       excelExportService.exportReportStats(reports);
                     } catch (error) {
+                      // eslint-disable-next-line no-console
                       console.error('Export error:', error);
                     }
                   }}
@@ -297,9 +305,7 @@ const ReportStatsPage: React.FC = () => {
                         <Box key={tdp.name} className="flex items-center justify-between p-3 bg-gray-50 rounded">
                           <Box className="flex items-center gap-3">
                             <Box className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${
-                              index === 0 ? 'bg-yellow-500' : 
-                              index === 1 ? 'bg-gray-400' : 
-                              index === 2 ? 'bg-orange-500' : 'bg-blue-500'
+                              getRankingBadgeClass(index)
                             }`}>
                               {index + 1}
                             </Box>
@@ -331,6 +337,7 @@ const ReportStatsPage: React.FC = () => {
                 try {
                   excelExportService.exportReportSummary(reports);
                 } catch (error) {
+                  // eslint-disable-next-line no-console
                   console.error('Export error:', error);
                 }
               }}
@@ -344,6 +351,7 @@ const ReportStatsPage: React.FC = () => {
                 try {
                   excelExportService.exportReportDetails(reports);
                 } catch (error) {
+                  // eslint-disable-next-line no-console
                   console.error('Export error:', error);
                 }
               }}
@@ -357,6 +365,7 @@ const ReportStatsPage: React.FC = () => {
                 try {
                   excelExportService.exportReportStats(reports);
                 } catch (error) {
+                  // eslint-disable-next-line no-console
                   console.error('Export error:', error);
                 }
               }}

@@ -72,10 +72,12 @@ const authSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set, get) => ({
             
             // ✅ Lấy thông tin user thật từ Zalo SDK
             const userInfo = await getZaloUserInfo();
+            // eslint-disable-next-line no-console
             console.log("📱 Zalo User Info:", userInfo); // Debug log
             
             set(state => ({ ...state, user: userInfo }));
         } catch (err) {
+            // eslint-disable-next-line no-console
             console.error("❌ Error getting user info:", err);
             
             // ✅ Fallback: nếu không lấy được thông tin từ Zalo thì tạo user mặc định
@@ -97,6 +99,7 @@ const authSlice: StateCreator<AuthSlice, [], [], AuthSlice> = (set, get) => ({
             const token = await getToken();
             set(state => ({ ...state, token }));
         } catch (err) {
+            // eslint-disable-next-line no-console
             console.log("❌ Error getting token:", err);
         } finally {
             set(state => ({ ...state, loadingToken: false }));

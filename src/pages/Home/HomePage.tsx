@@ -101,7 +101,7 @@ const HomePage: React.FunctionComponent = () => {
     key: string;
     title: string;
     phoneNumber: string | null;
-    icon: JSX.Element;
+    icon: React.ReactElement;
   }) => {
     setDirectoryModalVisible(false);
     
@@ -111,13 +111,16 @@ const HomePage: React.FunctionComponent = () => {
         openPhone({
           phoneNumber: option.phoneNumber,
           success: () => {
+            // eslint-disable-next-line no-console
             console.log(`Gọi thành công đến ${option.phoneNumber}`);
           },
           fail: (error) => {
+            // eslint-disable-next-line no-console
             console.error("Lỗi khi gọi điện:", error);
           },
         });
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error("Lỗi khi thực hiện cuộc gọi:", error);
       }
     } else {
@@ -183,7 +186,7 @@ const HomePage: React.FunctionComponent = () => {
         <Box className="mt-4 p-3 bg-blue-50 rounded-lg">
           <Text size="xSmall" className="text-blue-700">
             💡 <strong>Ghi chú:</strong> Nhấn vào số điện thoại để gọi trực tiếp. 
-            Chọn "Danh bạ phường Hà Huy Tập" để xem thông tin lãnh đạo phường.
+            Chọn &quot;Danh bạ phường Hà Huy Tập&quot; để xem thông tin lãnh đạo phường.
           </Text>
         </Box>
       </Modal>

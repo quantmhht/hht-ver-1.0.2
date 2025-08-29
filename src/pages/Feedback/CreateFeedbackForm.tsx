@@ -1,6 +1,5 @@
 import { Button, Divider, ImageUpload, TextArea, Input } from "@components";
 import { MAX_FEEDBACK_IMAGES } from "@constants/common";
-import { AppError } from "@dts";
 import { useStore } from "@store";
 import React, { useState } from "react";
 import styled from "styled-components";
@@ -8,10 +7,10 @@ import tw from "twin.macro";
 import { Box, Icon, Select, Text, useSnackbar } from "zmp-ui";
 import { ImageType } from "zmp-ui/image-viewer";
 import { useForm, Controller } from "react-hook-form";
-import SelectFeedbackType from "./SelectFeedbackType";
 import { useLocation } from "react-router-dom";
 import { TDP_LIST } from "@constants/utinities";
 import { getZaloLocation } from "@service/zalo";
+import SelectFeedbackType from "./SelectFeedbackType";
 
 const Conainer = styled(Box)`
   ${tw`bg-white`}
@@ -202,14 +201,14 @@ const CreateFeedbackForm: React.FC<CreateFeedbackFormProps> = ({
     {locationData && (
         <Box className="mt-4">
             <iframe
+                title="Vị trí trên bản đồ"
                 width="100%"
                 height="250"
                 style={{ border: 0, borderRadius: '8px' }}
                 loading="lazy"
                 allowFullScreen
               src={`https://maps.google.com/maps?q=${locationData.latitude},${locationData.longitude}&z=17&output=embed`}
-            >
-            </iframe>
+             />
             <Text size="xSmall" className="text-gray-500 mt-2 text-center">
                 Vị trí đã ghi nhận: {locationData.latitude}, {locationData.longitude}
             </Text>

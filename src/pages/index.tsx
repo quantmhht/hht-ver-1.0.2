@@ -9,20 +9,19 @@ import {
   CreateFeedbackPage,
 } from "./Feedback";
 import { HomePage } from "./Home";
-import { ReportPage } from "./Report";
+import { 
+  ReportPage,
+  CreateReportPage,
+  ReportDetailPage,
+  ReportStatsPage,
+  ManageTDPPage,
+} from "./Report";
 import { DirectoryPage } from "./Directory";
 import {
   NewsListPage,
   NewsDetailPage,
   NewsManagementPage,
 } from "./News";
-// Import thêm các trang báo cáo
-import { 
-  CreateReportPage,
-  ReportDetailPage,
-  ReportStatsPage,
-  ManageTDPPage,
-} from "./Report";
 
 
 const Routes: React.FC = () => (

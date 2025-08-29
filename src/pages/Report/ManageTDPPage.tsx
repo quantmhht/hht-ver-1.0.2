@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useStore } from "../../store";
 import { Box, Text, Button, Input, Modal, Icon, useSnackbar } from "zmp-ui";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+import PageLayout from "@components/layout/PageLayout";
+import { useStore } from "../../store";
 import { TDPInfo } from "../../types/report";
 import { getUserRole } from "../../utils/auth";
-import PageLayout from "@components/layout/PageLayout";
 
 const ManageTDPPage: React.FC = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { openSnackbar } = useSnackbar();
   const { user, tdpList, fetchTDPList, addTDP, updateTDP, deleteTDP, loading } = useStore();
 

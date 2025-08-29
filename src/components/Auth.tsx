@@ -22,12 +22,13 @@ const Auth = () => {
                     await getUserInfo();
                 }
             } catch (error) {
+                // eslint-disable-next-line no-console
                 console.error("Auth initialization error:", error);
             }
         };
 
         initAuth();
-    }, []); // ✅ Chỉ chạy 1 lần khi component mount
+    }, [token, user, getToken, getUserInfo]); // ✅ Chỉ chạy 1 lần khi component mount
 
     return null;
 };

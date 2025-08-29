@@ -35,9 +35,9 @@ const InformationGuideList = React.forwardRef<
                 />
             ))}
             {loading ? (
-                [...Array(5)].map((item, index) => (
+                [...Array(5)].map((_, index) => (
                     <InformationGuideItemSkeleton
-                        key={`ìnormation-guide-skeleton-${index}`}
+                        key={`skeleton-${index}`}
                     />
                 ))
             ) : data.length === 0 ? (

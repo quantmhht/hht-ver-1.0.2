@@ -16,8 +16,8 @@ import {
   deleteDoc,
   updateDoc
 } from "firebase/firestore";
-import { db } from "./firebase";
 import { News, Feedback, Organization, FeedbackType } from "@dts";
+import { db } from "./firebase";
 
 // ===== INTERFACES CHO PARAMS =====
 
@@ -76,6 +76,7 @@ export const getOrganization = async (params: GetOrganizationParams): Promise<Or
     };
     return defaultOrg;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error getting organization:", error);
     return null;
   }
@@ -87,7 +88,7 @@ export const getNews = async (params: GetNewsParams = {}): Promise<News[]> => {
   try {
     const { limit: limitCount = 20, page = 0 } = params;
     
-    let newsQuery = query(
+    const newsQuery = query(
       collection(db, "news"),
       orderBy("createdAt", "desc"),
       limit(limitCount)
@@ -107,6 +108,7 @@ export const getNews = async (params: GetNewsParams = {}): Promise<News[]> => {
 
     return newsList;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error getting news:", error);
     return [];
   }
@@ -124,6 +126,7 @@ export const createFeedback = async (feedbackData: CreateFeedbackParams): Promis
     });
     return true;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error creating feedback:", error);
     return false;
   }
@@ -133,7 +136,7 @@ export const getFeedbacks = async (params: GetFeedbacksParams): Promise<Feedback
   try {
     const {  limit: limitCount = 10, page = 0 } = params;
     
-    let feedbackQuery = query(
+    const feedbackQuery = query(
       collection(db, "feedbacks"),
       orderBy("createdAt", "desc"),
       limit(limitCount)
@@ -150,6 +153,7 @@ export const getFeedbacks = async (params: GetFeedbacksParams): Promise<Feedback
 
     return feedbackList;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error getting feedbacks:", error);
     return [];
   }
@@ -171,6 +175,7 @@ export const getFeedbackDetail = async (id: string): Promise<Feedback | null> =>
     }
     return null;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error getting feedback detail:", error);
     return null;
   }
@@ -195,6 +200,7 @@ export const getFeedbackTypes = async (params: GetFeedbackTypeParams): Promise<F
     ];
     return types;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error getting feedback types:", error);
     return [];
   }
@@ -236,6 +242,7 @@ export const addNews = async (data: NewsData): Promise<string | null> => {
     });
     return docRef.id; // Trả về ID của document vừa tạo
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error adding news:", error);
     return null;
   }
@@ -247,6 +254,7 @@ export const updateNews = async (id: string, data: Partial<NewsData>): Promise<b
     await updateDoc(newsDoc, data);
     return true;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error updating news:", error);
     return false;
   }
@@ -258,6 +266,7 @@ export const deleteNews = async (id: string): Promise<boolean> => {
     await deleteDoc(newsDoc);
     return true;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error deleting news:", error);
     return false;
   }
@@ -276,6 +285,7 @@ export const updateFeedback = async (id: string, data: UpdateFeedbackParams): Pr
     });
     return true;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error updating feedback:", error);
     return false;
   }

@@ -33,9 +33,11 @@ function WithItemClick<T>(Component: ComponentType<T & object>) {
                 openPhone({
                     phoneNumber,
                     success: () => {
+                        // eslint-disable-next-line no-console
                         console.log("");
                     },
                     fail: error => {
+                        // eslint-disable-next-line no-console
                         console.log(error);
                     },
                 });
@@ -43,6 +45,7 @@ function WithItemClick<T>(Component: ComponentType<T & object>) {
                 try {
                     openWebView(link);
                 } catch (err) {
+                    // eslint-disable-next-line no-console
                     console.log("ERR: ", err);
                 }
             }

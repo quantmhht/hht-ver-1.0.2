@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Input, Select, Switch } from 'zmp-ui';
+import { Box, Button, Input, Select, Switch, Text } from 'zmp-ui';
 import { Question, QuestionType } from '../../../types/report';
 import OptionEditor from './OptionEditor';
 
@@ -61,10 +61,11 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({ question, index, onChan
 
         {/* Toggle cho câu hỏi bắt buộc */}
         <div className="flex flex-col items-center">
-          <label className="text-sm text-gray-600">Bắt buộc</label>
+          <Text id={`required-label-${question.id}`} className="text-sm text-gray-600">Bắt buộc</Text>
           <Switch 
             checked={question.isRequired} 
-            onChange={(checked) => handleFieldChange('isRequired', checked)} 
+            onChange={(checked) => handleFieldChange('isRequired', checked)}
+            aria-labelledby={`required-label-${question.id}`}
           />
         </div>
       </div>

@@ -1,8 +1,8 @@
     import React, { FC } from "react";
     import { Box } from "zmp-ui";
     import { News } from "@dts";
-    import { NewsItem } from "./NewsItem";
     import { NewsItemSkeleton } from "@components/skeleton";
+    import { NewsItem } from "./NewsItem";
 
     export const NewsList: FC<{ news: News[]; loading: boolean }> = ({ news, loading }) => {
       if (loading) {

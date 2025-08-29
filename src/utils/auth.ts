@@ -32,6 +32,7 @@ export const getUserRole = (idByOA?: string, id?: string): UserRole => {
   const userIds = [idByOA, id].filter(Boolean) as string[];
   
   if (userIds.length === 0) {
+    // eslint-disable-next-line no-console
     console.log("🔍 No user ID found, defaulting to citizen");
     return "citizen";
   }
@@ -39,19 +40,23 @@ export const getUserRole = (idByOA?: string, id?: string): UserRole => {
   // Kiểm tra từng ID trong danh sách
   for (const userId of userIds) {
     if (ADMIN_ZALO_IDS.includes(userId)) {
+      // eslint-disable-next-line no-console
       console.log(`🔑 Admin role detected for ID: ${userId}`);
       return "admin";
     }
     if (MOD_ZALO_IDS.includes(userId)) {
+      // eslint-disable-next-line no-console
       console.log(`🔑 Mod role detected for ID: ${userId}`);
       return "mod";
     }
     if (LEADER_ZALO_IDS.includes(userId)) {
+      // eslint-disable-next-line no-console
       console.log(`🔑 Leader role detected for ID: ${userId}`);
       return "leader";
     }
   }
   
+  // eslint-disable-next-line no-console
   console.log(`🔑 No special role found for IDs: ${userIds.join(', ')}, defaulting to citizen`);
   return "citizen";
 };
@@ -59,9 +64,7 @@ export const getUserRole = (idByOA?: string, id?: string): UserRole => {
 /**
  * ✅ Phiên bản tương thích ngược (chỉ nhận idByOA)
  */
-export const getUserRoleCompat = (idByOA?: string): UserRole => {
-  return getUserRole(idByOA);
-};
+export const getUserRoleCompat = (idByOA?: string): UserRole => getUserRole(idByOA);
 
 /**
  * Lấy permissions dựa trên role
@@ -107,9 +110,7 @@ export const canAccessReports = (idByOA?: string, id?: string): boolean => {
 /**
  * ✅ Phiên bản tương thích ngược
  */
-export const canAccessReportsCompat = (idByOA?: string): boolean => {
-  return canAccessReports(idByOA);
-};
+export const canAccessReportsCompat = (idByOA?: string): boolean => canAccessReports(idByOA);
 
 /**
  * ✅ Kiểm tra user có permission cụ thể không (hỗ trợ fallback)

@@ -39,7 +39,8 @@ const organizationSlice: StateCreator<OrganizationSlice> = (set, get) => ({
                 }));
             }
         } catch (err) {
-            console.log("err: ", err);
+            // eslint-disable-next-line no-console
+            console.error("Error following official account:", err);
         }
     },
 
@@ -56,6 +57,7 @@ const organizationSlice: StateCreator<OrganizationSlice> = (set, get) => ({
                 organization: org ?? undefined,
             }));
         } catch (error) {
+            // eslint-disable-next-line no-console
             console.error("Error getting organization:", error);
         } finally {
             set(state => ({
